@@ -1,0 +1,110 @@
+<div class="col-lg-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="col-sm-12">
+            <div class="input-group mb-3 float-right">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="cil-search"></i></span>
+                </div>
+                <input type="search" class="form-control" placeholder="Buscar" autocomplete="buscar" size="35" required>
+            </div>            
+              <button type="button" class="btn btn-primary float-right" (click)="openToAdd()">+Nuevo</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Usuario</th>
+              <th>Fecha de registro</th>
+              <th>Categoría</th>
+              <th>Estatus</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let items of usuarios">
+              <td>{{items.id}}</td>
+              <td>{{items.usuario}}</td>
+              <td>{{items.nombre}}</td>
+              <td>{{items.estado}}</td>
+              <td>
+                <button (click)="openToVisualy()" class="btn btn-info text-white"><i class="cil-find-in-page"></i></button>
+                <button (click)="openToModify()" class="btn btn-warning text-white"><i class="cil-pencil"></i></button>
+                <button (click)="openToDelete()" class="btn btn-danger text-white"><i class="cil-trash"></i>  </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <ul class="pagination">
+          <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+          <li class="page-item active"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">4</a></li>
+          <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+      </div>
+    </div>
+  </div> 
+
+  <div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" 
+  aria-labelledby="entityModal" aria-hidden="true">
+        <div class="modal-dialog modal-primary modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">{{title}}</h4>
+                  <button type="button" class="close" (click)="dismiss()" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form class="form-horizontal">
+                    <div class="form-group">
+                      <label class="col-form-label" for="prependedInput">Categoría</label>
+                      <div class="controls">
+                        <div class="input-prepend input-group">
+                          <input id="prependedInput" class="form-control" size="16" type="text">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-form-label" for="appendedInput">Nombre y Apellidos</label>
+                      <div class="controls">
+                        <div class="input-group">
+                          <input id="appendedInput" class="form-control" size="16" type="text">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-form-label" for="appendedPrependedInput">Password</label>
+                      <div class="controls">
+                        <div class="input-prepend input-group">
+                          <input id="appendedPrependedInput" class="form-control" size="16" type="text">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="col-form-label" for="appendedInputButton">Estatus</label>
+                      <select id="select3" name="select3" class="form-control form-control-sm">
+                        <option value="0">Activo</option>
+                        <option value="1">Inactivo</option>
+
+                      </select>
+                    </div>
+                    <div class="form-actions">
+                      
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Guardar</button>
+                  <button class="btn btn-secondary btn-danger" type="button" (click)="dismiss()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+  </div>
+
+  

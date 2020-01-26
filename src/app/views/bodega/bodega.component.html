@@ -1,0 +1,118 @@
+<div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <div class="col-sm-6">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="cil-search"></i></span>
+                </div>
+                <input type="search" class="form-control" placeholder="Buscar" autocomplete="buscar" size="35" required>
+                <div>
+                    <button type="button" class="btn btn-block btn-success float-right" (click)="openToAdd()">+Nuevo</button>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Descripción</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Bodega Ingreso</td>
+              <td>
+                <span class="badge badge-success">Activa</span>
+              </td>
+              <td>
+                <button><i class="cil-pencil"></i></button>
+                <button><i class="cil-trash"></i>  </button>
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Bodega Venta</td>
+              <td>
+                <span class="badge badge-success">Activa</span>
+              </td>
+              <td>
+                <button><i class="cil-pencil"></i></button>
+                <button><i class="cil-trash"></i>  </button>
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Bodega Sucursal</td>
+              <td>
+                <span class="badge badge-warning">Pending</span>
+              </td>
+              <td>
+                <button><i class="cil-pencil"></i></button>
+                <button><i class="cil-trash"></i>  </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <ul class="pagination">
+          <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+          <li class="page-item active">
+            <a class="page-link" href="#">1</a>
+          </li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">4</a></li>
+          <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="entityModal" aria-hidden="true">
+        <div class="modal-dialog modal-primary" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">{{title}}</h4>
+                <button type="button" class="close" (click)="dismiss()" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label class="col-form-label" for="prependedInput">Descripción</label>
+                  <div class="controls">
+                    <div class="input-prepend input-group">
+                      <input id="prependedInput" class="form-control" size="16" type="text">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label" for="prependedInput1">Observaciones</label>
+                    <div class="controls">
+                      <div class="input-prepend input-group">
+                        <input id="prependedInput1" class="form-control" size="16" type="text">
+                      </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label" for="prependedInput2">Estado</label>
+                    <div class="controls">
+                      <div class="input-prepend input-group">
+                        <input id="prependedInput2" class="form-control" size="16" type="text">
+                      </div>
+                    </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button class="btn btn-secondary btn-danger" type="button" (click)="dismiss()">Cancelar</button>
+              </div>
+            </div>
+        </div>
+    </div>
+    
