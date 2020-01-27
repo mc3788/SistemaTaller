@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  backenUrlImg: 'http://localhost:8888/api/'
+  backenUrl: 'http://localhost/api/',
+  backendAuth: 'http://localhost/api/'
 };
 
 /*

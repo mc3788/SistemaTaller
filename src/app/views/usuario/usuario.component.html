@@ -1,110 +1,152 @@
 <div class="col-lg-12">
-    <div class="card">
-      <div class="card-header">
-        <div class="col-sm-12">
-            <div class="input-group mb-3 float-right">
-                <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="cil-search"></i></span>
-                </div>
-                <input type="search" class="form-control" placeholder="Buscar" autocomplete="buscar" size="35" required>
-            </div>            
-              <button type="button" class="btn btn-primary float-right" (click)="openToAdd()">+Nuevo</button>
+  <div class="card">
+    <div class="card-header">
+      <div class="row">
+        <div class="input-group col-10">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="cil-search"></i></span>
+          </div>
+          <input type="search" class="form-control" placeholder="Buscar" autocomplete="buscar" size="35" required>
+        </div>
+        <div class="col-2">
+          <button type="button" class="btn btn-primary float-right" (click)="openToAdd()">+Nuevo</button>
         </div>
       </div>
-      <div class="card-body">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th>Usuario</th>
-              <th>Fecha de registro</th>
-              <th>Categoría</th>
-              <th>Estatus</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let items of usuarios">
-              <td>{{items.id}}</td>
-              <td>{{items.usuario}}</td>
-              <td>{{items.nombre}}</td>
-              <td>{{items.estado}}</td>
-              <td>
-                <button (click)="openToVisualy()" class="btn btn-info text-white"><i class="cil-find-in-page"></i></button>
-                <button (click)="openToModify()" class="btn btn-warning text-white"><i class="cil-pencil"></i></button>
-                <button (click)="openToDelete()" class="btn btn-danger text-white"><i class="cil-trash"></i>  </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        
-        <ul class="pagination">
-          <li class="page-item"><a class="page-link" href="#">Prev</a></li>
-          <li class="page-item active"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item"><a class="page-link" href="#">4</a></li>
-          <li class="page-item"><a class="page-link" href="#">Next</a></li>
-        </ul>
-      </div>
     </div>
-  </div> 
+    <div class="card-body">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th>Id</th>
+          <th>Usuario</th>
+          <th>Nombre</th>
+          <th>Perfil</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let items of usuarios">
+          <td>{{items.id}}</td>
+          <td>{{items.usuario}}</td>
+          <td>{{items.nombre}}</td>
+          <td>{{items.perfil.descripcion}}</td>
+          <td>
+            <h5>
+              <span class="badge badge-success" *ngIf="items.estado==='A'">Activo</span>
+              <span class="badge badge-danger" *ngIf="items.estado==='B'">Inactivo</span>
+            </h5>
+          </td>
+          <td>
+            <button (click)="openToModify(items.id)" class="btn btn-warning text-white"><i class="cil-pencil"></i></button>
+            <button (click)="openToDelete(items.id, items.usuario)" class="btn btn-danger text-white"><i class="cil-trash"></i></button>
+            <button (click)="openToVisualy(items.id)" class="btn btn-info text-white"><i class="cil-find-in-page"></i></button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
 
-  <div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" 
-  aria-labelledby="entityModal" aria-hidden="true">
-        <div class="modal-dialog modal-primary modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                  <h4 class="modal-title">{{title}}</h4>
-                  <button type="button" class="close" (click)="dismiss()" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <form class="form-horizontal">
-                    <div class="form-group">
-                      <label class="col-form-label" for="prependedInput">Categoría</label>
-                      <div class="controls">
-                        <div class="input-prepend input-group">
-                          <input id="prependedInput" class="form-control" size="16" type="text">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-form-label" for="appendedInput">Nombre y Apellidos</label>
-                      <div class="controls">
-                        <div class="input-group">
-                          <input id="appendedInput" class="form-control" size="16" type="text">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-form-label" for="appendedPrependedInput">Password</label>
-                      <div class="controls">
-                        <div class="input-prepend input-group">
-                          <input id="appendedPrependedInput" class="form-control" size="16" type="text">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-form-label" for="appendedInputButton">Estatus</label>
-                      <select id="select3" name="select3" class="form-control form-control-sm">
-                        <option value="0">Activo</option>
-                        <option value="1">Inactivo</option>
-
-                      </select>
-                    </div>
-                    <div class="form-actions">
-                      
-                    </div>
-                  </form>
-                </div>
-                <div class="modal-footer">
-                  <button type="submit" class="btn btn-primary">Guardar</button>
-                  <button class="btn btn-secondary btn-danger" type="button" (click)="dismiss()">Cancelar</button>
-                </div>
-            </div>
-        </div>
+      <!--        <ul class="pagination">-->
+      <!--          <li class="page-item"><a class="page-link" href="#">Prev</a></li>-->
+      <!--          <li class="page-item active"><a class="page-link" href="#">1</a></li>-->
+      <!--          <li class="page-item"><a class="page-link" href="#">2</a></li>-->
+      <!--          <li class="page-item"><a class="page-link" href="#">3</a></li>-->
+      <!--          <li class="page-item"><a class="page-link" href="#">4</a></li>-->
+      <!--          <li class="page-item"><a class="page-link" href="#">Next</a></li>-->
+      <!--        </ul>-->
+    </div>
   </div>
+</div>
 
-  
+<div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-primary" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">{{title}}</h4>
+        <button type="button" class="close" (click)="entityModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form class="form-horizontal" [formGroup]="modalForm" (ngSubmit)="saveChanges()">
+        <div class="modal-body">
+
+          <div class="form-group">
+            <label class="col-form-label" for="userInput">Usuario</label>
+            <div class="controls">
+              <div class="input-group">
+                <input id="userInput" class="form-control" formControlName="usuario" size="16" type="text" [disableControl]="modalMode!=1">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-form-label" for="perfilSelect">Perfil</label>
+            <div class="controls">
+              <div class="input-prepend input-group">
+<!--                <input id="perfilSelect" class="form-control" formControlName="perfil" size="16" type="text">-->
+                <select id="perfilSelect" class="form-control" formControlName="perfil" name="perfilSelect" [disableControl]="modalMode===0">
+                  <option *ngFor="let p of perfiles" value="{{p.id}}">{{p.descripcion}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-form-label" for="nameInput">Nombre y Apellidos</label>
+            <div class="controls">
+              <div class="input-group">
+                <input id="nameInput" class="form-control" formControlName="nombre" size="16" type="text" [disableControl]="modalMode===0">
+              </div>
+            </div>
+          </div>
+          <div class="form-group" *ngIf="modalMode===1">
+            <label class="col-form-label" for="passwordInput">Password</label>
+            <div class="controls">
+              <div class="input-prepend input-group">
+                <input id="passwordInput" class="form-control" formControlName="password" size="16" type="password" [disableControl]="modalMode===0">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-form-label" for="selectStatus">Estado</label>
+            <select id="selectStatus" name="selectStatus" formControlName="estado" class="form-control" [disableControl]="modalMode===0">
+              <option value="A">Activo</option>
+              <option value="B">Inactivo</option>
+
+            </select>
+          </div>
+
+
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary btn-secondary" type="button" (click)="dismiss()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" *ngIf="modalMode != 0">Guardar</button>
+        </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<!--Modal de Eliminacion-->
+<div bsModal #deleteModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-danger" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">{{title}}</h4>
+        <button type="button" class="close" (click)="deleteModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>¿Desea eliminar el registro?</p>
+        <p>{{selId+' - '+ selName}}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="deleteModal.hide()">Cancelar
+        </button>
+        <button type="button" class="btn btn-danger" (click)="deleteReg()">Eliminar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
