@@ -1,1 +1,143 @@
-<p>creditoscaja works!</p>
+<div class="col-lg-10">
+    <div class="card">
+      <div class="card-header">
+        <div class="col-sm-6">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="cil-search"></i></span>
+                </div>
+                <input type="search" class="form-control" placeholder="Buscar" autocomplete="buscar" size="35" required>
+                <div>
+                    <button type="button" class="btn btn-block btn-primary float-right" (click)="openToAdd()">+Nuevo</button>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+                <th>Id</th>
+                <th>Fecha ingreso</th>
+                <th>Número Documento</th>
+                <th>Monto</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let items of creditosCaja">
+              <td>{{items.id}}</td>
+              <td>{{items.fecha}}</td>
+              <td>{{items.noDocumento}}</td>
+              <td>{{items.monto}}</td>
+              <td>{{items.descripcion}}</td>
+              <td>
+                <button (click)="openToModify(items.id)" class="btn btn-warning text-white"><i class="cil-pencil"></i></button>
+                <button (click)="openToDelete(items.id,items.descripcion,items.noDocumento)" class="btn btn-danger text-white"><i class="cil-trash"></i></button>
+                <button (click)="openToVisualy(items.id)" class="btn btn-info text-white"><i class="cil-find-in-page"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- <ul class="pagination">
+          <li class="page-item"><a class="page-link" href="#">Prev</a></li>
+          <li class="page-item active">
+            <a class="page-link" href="#">1</a>
+          </li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">4</a></li>
+          <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul> -->
+      </div>
+    </div>
+  </div>
+
+  <div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="entityModal" 
+    aria-hidden="true">
+        <div class="modal-dialog modal-primary modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">{{title}}</h4>
+                <button type="button" class="close" (click)="entityModal.hide()" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <form class="form-horizontal" [formGroup]="modalForm" (ngSubmit)="saveChanges()">
+                <div class="modal-body">
+
+                  <div class="form-group">
+                    <label class="col-form-label" for="fechaInput">Fecha</label>
+                    <div class="controls">
+                      <div class="input-group">
+                        <input id="fechaInput" class="form-control" formControlName="fecha" size="16" type="date" [disableControl]="modalMode===0">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-form-label" for="noDocumentoInput">No. Documento</label>
+                    <div class="controls">
+                      <div class="input-prepend input-group">
+                        <input id="noDocumentoInput" class="form-control" formControlName="noDocumento" size="16" type="number" [disableControl]="modalMode===0">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-form-label" for="montoInput">Monto</label>
+                    <div class="controls">
+                      <div class="input-prepend input-group">
+                        <input id="montoInput" class="form-control" formControlName="monto" size="16" type="number" [disableControl]="modalMode===0">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-form-label" for="descripcionInput">Descripción</label>
+                    <div class="controls">
+                      <div class="input-prepend input-group">
+                        <input id="descripcionInput" class="form-control" formControlName="descripcion" size="16" type="text" [disableControl]="modalMode===0">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-form-label" for="tipoInput">Tipo</label>
+                    <div class="controls">
+                      <div class="input-prepend input-group">
+                        <input id="tipoInput" class="form-control" formControlName="tipo" size="16" type="text" [disableControl]="modalMode===0">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn btn-secondary btn-secondary" type="button" (click)="dismiss()">Cancelar</button>
+                  <button type="submit" class="btn btn-primary" *ngIf="modalMode != 0">Guardar</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+
+<!--Modal de Eliminacion-->
+<div bsModal #deleteModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-danger" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">{{title}}</h4>
+        <button type="button" class="close" (click)="deleteModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>¿Desea eliminar el registro?</p>
+        <p>{{selId+' - '+ selName+'- No.'+selDocumento}}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="deleteModal.hide()">Cancelar
+        </button>
+        <button type="button" class="btn btn-danger" (click)="deleteReg()">Eliminar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

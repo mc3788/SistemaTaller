@@ -9,13 +9,13 @@ import {DirectivesModule} from '../../directives/directives.module';
 
 @NgModule({
   declarations: [UsuarioComponent],
-    imports: [
-        ModalModule.forRoot(),
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        UsuarioRoutingModule,
-        DirectivesModule
-    ]
+  imports: [
+      ModalModule.forRoot(),
+      CommonModule,
+      FormsModule,
+      ReactiveFormsModule,
+      UsuarioRoutingModule,
+      DirectivesModule
+  ]
 })
 export class UsuarioModule { }

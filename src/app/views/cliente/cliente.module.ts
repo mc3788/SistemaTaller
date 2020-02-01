@@ -1,19 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalModule } from "ngx-bootstrap";
 
 import { ClienteRoutingModule } from './cliente-routing.module';
 import { ClienteComponent } from './cliente.component';
-
+import {DirectivesModule} from '../../directives/directives.module';
 
 @NgModule({
   declarations: [ClienteComponent],
   imports: [
     ModalModule.forRoot(),
     FormsModule,
+    ReactiveFormsModule,
     CommonModule,
-    ClienteRoutingModule
+    ClienteRoutingModule,
+    DirectivesModule
   ]
 })
 export class ClienteModule { }

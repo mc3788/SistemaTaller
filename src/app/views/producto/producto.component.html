@@ -8,7 +8,7 @@
                 </div>
                 <input type="search" class="form-control" placeholder="Buscar" autocomplete="buscar" size="35" required>
                 <div>
-                    <button type="button" class="btn btn-block btn-success" (click)="openToAdd()">+Nuevo</button>
+                  <button type="button" class="btn btn-primary float-right" (click)="openToAdd()">+Nuevo</button>
                 </div>
 
             </div>
@@ -19,7 +19,6 @@
           <thead>
             <tr>
               <th>Id</th>
-              <th>Código</th>
               <th>Proveedor</th>
               <th>Nombre</th>
               <th>Precio venta</th>
@@ -28,122 +27,132 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>Yamalube</td>
-              <td>Canella</td>
-              <td>Aceite</td>
-              <td>120.00</td>
-              <td>Yamalube</td>
+            <tr *ngFor="let items of productos">
+              <td>{{items.id}}</td>
+              <!-- <td>Proveedor Nombre</td> -->
+              <td>{{items.proveedor.nombre}}</td>
+              <td>{{items.nombre}}</td>
+              <td>{{items.precioVenta}}</td>
+              <!-- <td>Marca Nombre</td> -->
+              <td>{{items.marca.nombre}}</td>
               <td>
-                <button (click)="openToVisualy()"><i class="cil-find-in-page"></i></button>
-                <button (click)="openToModify()"><i class="cil-pencil"></i></button>
-                <button (click)="openToDelete()"><i class="cil-trash"></i>  </button>
+                <button (click)="openToModify(items.id)" class="btn btn-warning text-white"><i class="cil-pencil"></i></button>
+                <button (click)="openToDelete(items.id, items.nombre)" class="btn btn-danger text-white"><i class="cil-trash"></i></button>
+                <button (click)="openToVisualy(items.id)" class="btn btn-info text-white"><i class="cil-find-in-page"></i></button>
               </td>
             </tr>
-            <tr>
-              <td>2</td>
-              <td>Motul</td>
-              <td>Canella</td>
-              <td>Aceite</td>
-              <td>150.00</td>
-              <td>Motul</td>
-              <td>
-                <button (click)="openToVisualy()"><i class="cil-find-in-page"></i></button>
-                <button (click)="openToModify()"><i class="cil-pencil"></i></button>
-                <button (click)="openToDelete()"><i class="cil-trash"></i></button>
-              </td>
-            </tr>
+              
           </tbody>
         </table>
-        
-        <ul class="pagination">
+        <!-- <ul class="pagination">
           <li class="page-item"><a class="page-link" href="#">Prev</a></li>
           <li class="page-item active"><a class="page-link" href="#">1</a></li>
           <li class="page-item"><a class="page-link" href="#">2</a></li>
           <li class="page-item"><a class="page-link" href="#">3</a></li>
           <li class="page-item"><a class="page-link" href="#">4</a></li>
           <li class="page-item"><a class="page-link" href="#">Next</a></li>
-        </ul>
+        </ul> -->
       </div>
     </div>
   </div> 
 
-  <div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" 
-  aria-labelledby="entityModal" aria-hidden="true">
-        <div class="modal-dialog modal-primary modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                  <h4 class="modal-title">{{title}}</h4>
-                  <button type="button" class="close" (click)="dismiss()" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <form class="form-horizontal">
-                    <div class="form-group">
-                      <label class="col-form-label" for="prependedInput">Código</label>
-                      <div class="controls">
-                        <div class="input-prepend input-group">
-                          <input id="prependedInput" class="form-control" size="16" type="text">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-form-label" for="appendedInput">Proveedor</label>
-                      <div class="controls">
-                        <div class="input-group">
-                          <input id="appendedInput" class="form-control" size="16" type="text">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-form-label" for="appendedPrependedInput">Nombre</label>
-                      <div class="controls">
-                        <div class="input-prepend input-group">
-                          <input id="appendedPrependedInput" class="form-control" size="16" type="text">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-form-label" for="appendedInputButton2">Marca</label>
-                        <div class="controls">
-                          <div class="input-group">
-                            <input id="appendedInputButton2" class="form-control" size="16" type="text">
-                          </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-form-label" for="appendedInputButton">Precio Costo</label>
-                      <div class="controls">
-                        <div class="input-group">
-                          <input id="appendedInputButton" class="form-control" size="16" type="text">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-form-label" for="appendedInputButton1">Precio Venta</label>
-                        <div class="controls">
-                          <div class="input-group">
-                            <input id="appendedInputButton1" class="form-control" size="16" type="text">
-                          </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-form-label" for="appendedInputButton3">Observaciones</label>
-                        <div class="controls">
-                          <div class="input-group">
-                            <input id="appendedInputButton3" class="form-control" size="16" type="text">
-                          </div>
-                        </div>
-                    </div>
-                  </form>
-                </div>
-                <div class="modal-footer">
-                  <button type="submit" class="btn btn-primary">Guardar</button>
-                  <button class="btn btn-secondary btn-danger" type="button" (click)="dismiss()">Cancelar</button>
-            </div>
+  <div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="entityModal" aria-hidden="true">
+    <div class="modal-dialog modal-primary modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">{{title}}</h4>
+          <button type="button" class="close" (click)="entityModal.hide()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
-  </div>
-
+        <form class="form-horizontal" [formGroup]="modalForm" (ngSubmit)="saveChanges()">
+          <div class="modal-body">
+                      <div class="form-group">
+                        <label class="col-form-label" for="proveedorInput">Proveedor</label>
+                        <div class="controls">
+                          <div class="input-group">
+                            <!-- <input id="proveedorInput" class="form-control" formControlName="proveedor" size="16" type="text" [disableControl]="modalMode===0"> -->
+                            <select id="proveedorSelect" class="form-control" formControlName="proveedor" name="proveedorlSelect" [disableControl]="modalMode===0">
+                              <option *ngFor="let p of proveedores" value="{{p.id}}">{{p.nombre}}</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-form-label" for="nombreInput">Nombre</label>
+                        <div class="controls">
+                          <div class="input-prepend input-group">
+                            <input id="nombreInput" class="form-control" formControlName="nombre" size="16" type="text" [disableControl]="modalMode===0">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                          <label class="col-form-label" for="marcaInput">Marca</label>
+                          <div class="controls">
+                            <div class="input-group">
+                              <!-- <input id="marcaInput" class="form-control" formControlName="marca" size="16" type="text" [disableControl]="modalMode===0"> -->
+                              <select id="marcaSelect" class="form-control" formControlName="marca" name="marcaSelect" [disableControl]="modalMode===0">
+                                <option *ngFor="let m of marcas" value="{{m.id}}">{{m.nombre}}</option>
+                              </select>
+                            </div>
+                          </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-form-label" for="precioCostoInput">Precio Costo</label>
+                        <div class="controls">
+                          <div class="input-group">
+                            <input id="precioCostoInput" class="form-control" formControlName="precioCosto" size="16" type="number" [disableControl]="modalMode===0">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                          <label class="col-form-label" for="precioVentaInput">Precio Venta</label>
+                          <div class="controls">
+                            <div class="input-group">
+                              <input id="precioVentaInput" class="form-control" formControlName="precioVenta" size="16" type="number" [disableControl]="modalMode===0">
+                            </div>
+                          </div>
+                      </div>
+                      <div class="form-group">
+                          <label class="col-form-label" for="observacionesInput">Observaciones</label>
+                          <div class="controls">
+                            <div class="input-group">
+                              <input id="observacionesInput" class="form-control" formControlName="observaciones" size="16" type="text" [disableControl]="modalMode===0">
+                            </div>
+                          </div>
+                      </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary btn-secondary" type="button" (click)="dismiss()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" *ngIf="modalMode != 0">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div><!-- /.modal -->
   
+
+<!--Modal de Eliminacion-->
+<div bsModal #deleteModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-danger" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">{{title}}</h4>
+        <button type="button" class="close" (click)="deleteModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>¿Desea eliminar el registro?</p>
+        <p>{{selId+' - '+ selName}}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="deleteModal.hide()">Cancelar
+        </button>
+        <button type="button" class="btn btn-danger" (click)="deleteReg()">Eliminar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+

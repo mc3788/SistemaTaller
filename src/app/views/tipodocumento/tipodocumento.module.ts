@@ -1,17 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalModule } from "ngx-bootstrap";
 
 import { TipodocumentoRoutingModule } from './tipodocumento-routing.module';
 import { TipodocumentoComponent } from './tipodocumento.component';
-
+import {DirectivesModule} from '../../directives/directives.module';
 
 @NgModule({
   declarations: [TipodocumentoComponent],
   imports: [
     ModalModule.forRoot(),
     CommonModule,
-    TipodocumentoRoutingModule
+    FormsModule,
+    ReactiveFormsModule,
+    TipodocumentoRoutingModule,
+    DirectivesModule
   ]
 })
 export class TipodocumentoModule { }

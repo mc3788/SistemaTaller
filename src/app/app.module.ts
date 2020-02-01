@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FormsModule } from '@angular/forms';
+import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { DataService } from './services/data.service';
 
@@ -10,6 +10,10 @@ import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import { HttpClientModule } from '@angular/common/http';
+import { registerLocaleData } from '@angular/common';
+import localeGt from '@angular/common/locales/es-GT';
+
+registerLocaleData( localeGt, 'es-GT' );
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -35,9 +39,7 @@ import {
 
 // Import routing module
 import { AppRoutingModule } from './app.routing';
-
-
-
+// import { FilterPipe } from './filter.pipe';
 
 @NgModule({
   imports: [
@@ -52,12 +54,14 @@ import { AppRoutingModule } from './app.routing';
     FormsModule,
     BsDropdownModule.forRoot(),
     PerfectScrollbarModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   declarations: [
     AppComponent,
     ...APP_CONTAINERS,
-    LoginComponent
+    LoginComponent,
+    // FilterPipe
   ],
   providers: [{
     provide: LocationStrategy,

@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { ModalModule } from "ngx-bootstrap";
 
 import { BodegaRoutingModule } from './bodega-routing.module';
 import { BodegaComponent } from './bodega.component';
-
+import {DirectivesModule} from '../../directives/directives.module';
 
 @NgModule({
   declarations: [BodegaComponent],
@@ -13,7 +13,9 @@ import { BodegaComponent } from './bodega.component';
     ModalModule.forRoot(),
     CommonModule,
     FormsModule,
-    BodegaRoutingModule
+    ReactiveFormsModule,
+    BodegaRoutingModule,
+    DirectivesModule
   ]
 })
 export class BodegaModule { }

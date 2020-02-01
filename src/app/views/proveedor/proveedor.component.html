@@ -8,7 +8,7 @@
                 </div>
                 <input type="search" class="form-control" placeholder="Buscar" autocomplete="buscar" size="35" required>
                 <div>
-                    <button type="button" class="btn btn-block btn-success float-right" (click)="openToAdd()">+Nuevo</button>
+                  <button type="button" class="btn btn-primary float-right" (click)="openToAdd()">+Nuevo</button>
                 </div>
             </div>
         </div>
@@ -26,42 +26,22 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>Canella</td>
-              <td>13898080-1</td>
-              <td>23456789</td>
-              <td>Zona 9</td>
+            <tr *ngFor="let items of proveedores">
+              <td>{{items.id}}</td>
+              <td>{{items.nombre}}</td>
+              <td>{{items.nit}}</td>
+              <td>{{items.telefono}}</td>
+              <td>{{items.direccion}}</td>
               <td>
-                <button><i class="cil-pencil"></i></button>
-                <button><i class="cil-trash"></i>  </button>
+                <button (click)="openToModify(items.id)" class="btn btn-warning text-white"><i class="cil-pencil"></i></button>
+                <button (click)="openToDelete(items.id, items.nombre)" class="btn btn-danger text-white"><i class="cil-trash"></i></button>
+                <button (click)="openToVisualy(items.id)" class="btn btn-info text-white"><i class="cil-find-in-page"></i></button>
               </td>
             </tr>
-            <tr>
-              <td>2</td>
-              <td>Honda</td>
-              <td>20138980-K</td>
-              <td>22334242</td>
-              <td>Zona 4</td>
-              <td>
-                <button><i class="cil-pencil"></i></button>
-                <button><i class="cil-trash"></i>  </button>
-              </td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Motul</td>
-              <td>3234243-5</td>
-              <td>66232323</td>
-              <td>Zona 10</td>
-              <td>
-                <button><i class="cil-pencil"></i></button>
-                <button><i class="cil-trash"></i>  </button>
-              </td>
-            </tr>
+          
           </tbody>
         </table>
-        <ul class="pagination">
+        <!-- <ul class="pagination">
           <li class="page-item"><a class="page-link" href="#">Prev</a></li>
           <li class="page-item active">
             <a class="page-link" href="#">1</a>
@@ -70,7 +50,7 @@
           <li class="page-item"><a class="page-link" href="#">3</a></li>
           <li class="page-item"><a class="page-link" href="#">4</a></li>
           <li class="page-item"><a class="page-link" href="#">Next</a></li>
-        </ul>
+        </ul> -->
       </div>
     </div>
   </div>
@@ -84,53 +64,78 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div class="modal-body">
-                  <div class="form-group">
-                    <label class="col-form-label" for="prependedInput">Nit</label>
-                    <div class="controls">
-                      <div class="input-prepend input-group">
-                        <input id="prependedInput" class="form-control" size="16" type="text">
+              <form class="form-horizontal" [formGroup]="modalForm" (ngSubmit)="saveChanges()">
+                <div class="modal-body">
+                    <div class="form-group">
+                      <label class="col-form-label" for="nitInput">Nit</label>
+                      <div class="controls">
+                        <div class="input-prepend input-group">
+                          <input id="nitInput" class="form-control" formControlName="nit" size="16" type="text" [disableControl]="modalMode===0">
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="col-form-label" for="appendedInput">Nombre</label>
-                    <div class="controls">
-                      <div class="input-group">
-                        <input id="appendedInput" class="form-control" size="16" type="text">
+                    <div class="form-group">
+                      <label class="col-form-label" for="nombreInput">Nombre</label>
+                      <div class="controls">
+                        <div class="input-group">
+                          <input id="nombreInput" class="form-control" formControlName="nombre" size="16" type="text" [disableControl]="modalMode===0">
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="col-form-label" for="appendedPrependedInput">Teléfono</label>
-                    <div class="controls">
-                      <div class="input-prepend input-group">
-                        <input id="appendedPrependedInput" class="form-control" size="16" type="text">
+                    <div class="form-group">
+                      <label class="col-form-label" for="telefonoInput">Teléfono</label>
+                      <div class="controls">
+                        <div class="input-prepend input-group">
+                          <input id="telefonoInput" class="form-control" formControlName="telefono" size="16" type="text" [disableControl]="modalMode===0">
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="col-form-label" for="appendedInputButton">Dirección</label>
-                    <div class="controls">
-                      <div class="input-group">
-                        <input id="appendedInputButton" class="form-control" size="16" type="text">
+                    <div class="form-group">
+                      <label class="col-form-label" for="direccionInput">Dirección</label>
+                      <div class="controls">
+                        <div class="input-group">
+                          <input id="direccionInput" class="form-control" formControlName="direccion" size="16" type="text" [disableControl]="modalMode===0">
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="form-group">
-                    <label class="col-form-label" for="appendedInputButton1">Observaciones</label>
-                    <div class="controls">
-                      <div class="input-group">
-                        <input id="appendedInputButton1" class="form-control" size="16" type="text">
+                    <div class="form-group">
+                      <label class="col-form-label" for="observacionesInput">Observaciones</label>
+                      <div class="controls">
+                        <div class="input-group">
+                          <input id="observacionesInput" class="form-control" formControlName="observaciones" size="16" type="text" [disableControl]="modalMode===0">
+                        </div>
                       </div>
                     </div>
-                  </div>
-              </div>
-              <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Guardar</button>
-                <button class="btn btn-secondary btn-danger" type="button" (click)="dismiss()">Cancelar</button>
-              </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn btn-secondary btn-secondary" type="button" (click)="dismiss()">Cancelar</button>
+                  <button type="submit" class="btn btn-primary" *ngIf="modalMode != 0">Guardar</button>
+                </div>
+              </form>
             </div>
         </div>
     </div>
     
+<!--Modal de Eliminacion-->
+<div bsModal #deleteModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-danger" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">{{title}}</h4>
+        <button type="button" class="close" (click)="deleteModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>¿Desea eliminar el registro?</p>
+        <p>{{selId+' - '+ selName}}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="deleteModal.hide()">Cancelar
+        </button>
+        <button type="button" class="btn btn-danger" (click)="deleteReg()">Eliminar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
