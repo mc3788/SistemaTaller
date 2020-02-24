@@ -2,11 +2,6 @@ import { INavData } from '../../dist/@coreui/angular';
 
 export const navItems: INavData[] = [
   {
-    name: 'Login',
-    url: '/login',
-    icon: 'cil-power-standby'
-  },
-  {
     name: 'Dashboard',
     url: '/dashboard',
     icon: 'cil-chart-line',
@@ -29,6 +24,11 @@ export const navItems: INavData[] = [
         name: 'Categorias',
         url: '/categoria',
         icon: 'cil-storage',
+      },
+      {
+        name: 'Accesos',
+        url: '/acceso',
+        icon: 'cil-lock-unlocked',
       }
     ]
   },
@@ -89,7 +89,7 @@ export const navItems: INavData[] = [
     url: '/inventarios',
     icon: 'cil-inbox',
     children: [
-    
+
       {
         name: 'Productos',
         url: '/producto',
@@ -100,11 +100,11 @@ export const navItems: INavData[] = [
         url: '/bodega',
         icon: 'cil-factory',
       },
-      {
-        name: 'Existencias',
-        url: '/inventario',
-        icon: 'cil-house',
-      }
+      // {
+      //   name: 'Existencias',
+      //   url: '/inventario',
+      //   icon: 'cil-house',
+      // }
     ]
   },
   {

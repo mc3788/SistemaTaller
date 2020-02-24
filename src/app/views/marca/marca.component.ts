@@ -4,6 +4,8 @@ import {Marca} from '../../interface/bo/Marca';
 import { DataService } from '../../services/data.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {MarcaDTO} from '../../interface/dto/MarcaDTO';
+import {AuthService} from '../../services/auth.service';
+import {Acceso} from '../../interface/bo/Acceso';
 
 @Component({
   selector: 'app-marca',
@@ -27,6 +29,8 @@ export class MarcaComponent implements OnInit {
   marcas: Marca[];
   detail: Marca;
 
+  public accesos: Acceso;
+
   selId: number;
   selName: string;
 
@@ -34,8 +38,9 @@ export class MarcaComponent implements OnInit {
   @ViewChild('deleteModal') public deleteModal: ModalDirective;
 
   constructor(private dataService: DataService,
-              public formBuilder: FormBuilder ) {
-    this.dataService.getAllItemsFromEntity('marca', '')
+              public formBuilder: FormBuilder, 
+              private authService: AuthService) {
+    this.dataService.getAllItemsFromEntity('marca', this.authService.token)
     .subscribe(res => {
       this.marcas = (<Marca[]>res);
     }, error => {
@@ -46,6 +51,10 @@ export class MarcaComponent implements OnInit {
     this.modalForm = this.formBuilder.group({
       nombre: ['']
       });
+
+    console.log( this.authService.accesos )
+
+    this.accesos = this.authService.accesos.find( a => a.opcion === 'Marca');
   }
 
   openToAdd() {
@@ -60,7 +69,7 @@ export class MarcaComponent implements OnInit {
     this.modalMode = 0;
     this.title='Consultar';
 
-    this.dataService.getEntityDetail('marca', '', id)
+    this.dataService.getEntityDetail('marca', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Marca>resp);
@@ -80,7 +89,7 @@ export class MarcaComponent implements OnInit {
   openToModify(id: number){
     this.modalMode = 2;
     this.title='Modificar';
-    this.dataService.getEntityDetail('marca', '', id)
+    this.dataService.getEntityDetail('marca', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Marca>resp);
@@ -103,7 +112,7 @@ export class MarcaComponent implements OnInit {
   }
 
   deleteReg( ) {
-    this.dataService.deleteEntity('marca', '', this.selId)
+    this.dataService.deleteEntity('marca', this.authService.token, this.selId)
       .subscribe(resp => {
         this.reload();
         this.deleteModal.hide();
@@ -123,7 +132,7 @@ export class MarcaComponent implements OnInit {
 
     if (this.modalMode === 1) {
       // Servicio para guardar nueva entidad
-      this.dataService.insertNewEntity('marca', '', dto)
+      this.dataService.insertNewEntity('marca', this.authService.token, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -136,7 +145,7 @@ export class MarcaComponent implements OnInit {
 
     } else if (this.modalMode === 2) {
       // se insertan los datos modificados con el servicio de edicion
-      this.dataService.editEntity('marca', '', this.detail.id, dto)
+      this.dataService.editEntity('marca', this.authService.token, this.detail.id, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -157,7 +166,7 @@ export class MarcaComponent implements OnInit {
   ngOnInit() {
   }
   reload() {
-    this.dataService.getAllItemsFromEntity( 'marca', '')
+    this.dataService.getAllItemsFromEntity( 'marca', this.authService.token)
       .subscribe(resp => {
         this.marcas = (<Marca[]> resp);
       }, error => {

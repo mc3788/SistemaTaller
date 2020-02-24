@@ -4,8 +4,8 @@ import {AuthService} from '../../services/auth.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: 'login.component.html'
+  selector: 'app-login',
+  templateUrl: './login.component.html'
 })
 export class LoginComponent {
 
@@ -18,21 +18,25 @@ export class LoginComponent {
                public formBuilder: FormBuilder ) {
 
     this.loginForm = this.formBuilder.group( {
-      email: ['', Validators.required],
+      username: ['', Validators.required],
       password: ['', Validators.required]
     } );
 
   }
 
   async authLoginAction() {
-    this.authService.login( this.loginForm.value.usuario, this.loginForm.value.password )
+    this.authService.login( this.loginForm.value.username, this.loginForm.value.password )
       .subscribe( async resp => {
         this.authService.token = resp['token'];
-        this.authService.userId = this.loginForm.value.usuario;
-        this.authService.saveSession();
+        this.authService.userId = this.loginForm.value.username;
+        await this.authService.saveSession();
+        await this.authService.loadAccess();
+        await this.router.navigate(['/dashboard']);
       }, err => {
         this.error = true;
+        console.log( err );
     });
+
   }
 
 }

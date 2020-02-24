@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { ModalModule } from "ngx-bootstrap";
-
+import {PipesModule} from '../../containers/pipes/pipes.module';
 import { BodegaRoutingModule } from './bodega-routing.module';
 import { BodegaComponent } from './bodega.component';
 import {DirectivesModule} from '../../directives/directives.module';
@@ -15,7 +15,8 @@ import {DirectivesModule} from '../../directives/directives.module';
     FormsModule,
     ReactiveFormsModule,
     BodegaRoutingModule,
-    DirectivesModule
+    DirectivesModule,
+    PipesModule
   ]
 })
 export class BodegaModule { }

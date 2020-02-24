@@ -1,19 +1,21 @@
-<div class="app-body">
-  <main class="main d-flex align-items-center">
+<div class="app flex-row align-items-center animated fadeIn">
     <div class="container">
-      <div class="row">
+      <div class="row justify-content-center">
         <div class="col-md-5 mx-auto">
           <div class="card-group">
             <div class="card p-4">
               <div class="card-body">
-                <form [formGroup]="loginForm" (ngSubmit)="autoLoginAction()">
                   <h1>Motopolis</h1>
                   <p class="text-muted">Iniciar sesión</p>
+                <form [formGroup]="loginForm" (ngSubmit)="authLoginAction()">
+                  <alert type="danger" *ngIf="error">
+                    <strong>Usuario o contraseña inválida</strong>
+                  </alert>
                   <div class="input-group mb-3">
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="icon-user"></i></span>
                     </div>
-                    <input type="text" class="form-control" placeholder="Usuario" autocomplete="username" formControlName="usuario" required>
+                    <input type="text" class="form-control" placeholder="Usuario" autocomplete="username" formControlName="username" required>
                   </div>
                   <div class="input-group mb-4">
                     <div class="input-group-prepend">
@@ -34,5 +36,5 @@
         </div>
       </div>
     </div>
-  </main>
 </div>
+

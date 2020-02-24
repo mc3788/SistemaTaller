@@ -1,19 +1,18 @@
 <div class="col-lg-10">
     <div class="card">
       <div class="card-header">
-        <div class="col-sm-6">
-            <div class="input-group mb-3">
-              <!-- <div class="md-form">
-                <input type="search" [(ngModel)]="searchText" placeholder="Search text">
-              </div> -->
-                <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="cil-search"></i></span>
-                </div>
-                <input type="search" [(ngModel)]="searchText"  placeholder="Buscar" autocomplete="buscar" size="35" required>
-                <div>
-                    <button type="button" class="btn btn-block btn-primary float-right" (click)="openToAdd()">+Nuevo</button>
-                </div>
+        <div class="row">
+          <div class="input-group col-10">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="cil-search"></i></span>
             </div>
+            <div class="search-hero">
+              <input class="form-control" type="search" [(ngModel)]="searchText" placeholder="Buscar" autocomplete="off" size="35" >
+            </div>
+          </div>
+          <div class="col-2">
+            <button type="button" class="btn btn-primary float-right" *ngIf="accesos.alta==='Y'" (click)="openToAdd()">+Nuevo</button>
+          </div>
         </div>
       </div>
       <div class="card-body">
@@ -27,28 +26,18 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let items of perfiles | filter: searchText">
+            <tr *ngFor="let items of perfiles | filter: 'descripcion' : searchText">
               <td>{{items.id}}</td>
               <td>{{items.descripcion}}</td>
               <td>{{items.observaciones}}</td>
               <td>
-                <button (click)="openToModify(items.id)" class="btn btn-warning text-white"><i class="cil-pencil"></i></button>
-                <button (click)="openToDelete(items.id,items.descripcion)" class="btn btn-danger text-white"><i class="cil-trash"></i></button>
-                <button (click)="openToVisualy(items.id)" class="btn btn-info text-white"><i class="cil-find-in-page"></i></button>
+                <button (click)="openToModify(items.id)" *ngIf="accesos.cambio==='Y'" class="btn btn-warning text-white"><i class="cil-pencil"></i></button>
+                <button (click)="openToDelete(items.id,items.descripcion)" *ngIf="accesos.baja==='Y'" class="btn btn-danger text-white"><i class="cil-trash"></i></button>
+                <button (click)="openToAccess(items.id)" *ngIf="accesos.consulta==='Y'" class="btn btn-dark text-white"><i class="cil-lock-unlocked"></i></button>
               </td>
             </tr>
           </tbody>
         </table>
-        <!-- <ul class="pagination">
-          <li class="page-item"><a class="page-link" href="#">Prev</a></li>
-          <li class="page-item active">
-            <a class="page-link" href="#">1</a>
-          </li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item"><a class="page-link" href="#">4</a></li>
-          <li class="page-item"><a class="page-link" href="#">Next</a></li>
-        </ul> -->
       </div>
     </div>
   </div>
@@ -118,3 +107,55 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+
+<!--Modal de Acessos-->
+<div bsModal #visualModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="visualModal" aria-hidden="true">
+  <div class="modal-dialog modal-primary modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">{{title}}</h4>
+          <button type="button" class="close" (click)="visualModal.hide()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+              <th>Opcion</th>
+              <th>Grabar</th>
+              <th>Eliminar</th>
+              <th>Cambiar</th>
+              <th>Consulta</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let items of accesosPerfil">
+            <td>{{items.opcion}}</td>
+            <td>
+              <p *ngIf="items.alta==='Y'">Si</p>
+              <p *ngIf="items.alta==='N'">No</p>
+            </td>
+            <td>
+              <p *ngIf="items.baja==='Y'">Si</p>
+              <p *ngIf="items.baja==='N'">No</p>
+            </td>
+            <td>
+              <p *ngIf="items.cambio==='Y'">Si</p>
+              <p *ngIf="items.cambio==='N'">No</p>
+            </td>
+            <td>
+              <p *ngIf="items.consulta==='Y'">Si</p>
+              <p *ngIf="items.consulta==='N'">No</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="visualModal.hide()">Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

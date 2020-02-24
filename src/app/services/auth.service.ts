@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Usuario} from '../interface/bo/Usuario';
 import {environment} from '../../environments/environment';
+import {Acceso} from '../interface/bo/Acceso';
 
 const backendUrl = environment.backendAuth;
 
@@ -13,6 +14,7 @@ export class AuthService {
   AuthSecurity: boolean;
   user: Usuario;
   logged = false;
+  public accesos: Acceso[];
 
   constructor(public http: HttpClient) {
   }
@@ -22,7 +24,26 @@ export class AuthService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
-    return this.http.post( backendUrl, {usuario: username, password: password}, {headers: headers});
+    return this.http.post( backendUrl + 'login', {usuario: username, password: password}, {headers: headers});
+  }
+
+  // Carga accesos por nombre de usuario
+  loadAccess( ) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'X-Auth-Token': this.token
+    });
+    return new Promise( (resolve, reject) => {
+      try {
+        this.http.get( backendUrl + 'usuario/permissions/' + this.userId, {headers: headers})
+          .subscribe( data => {
+            this.accesos = <Acceso[]>data;
+            resolve();
+          } );
+      } catch (e) {
+        reject();
+      }
+    });
   }
 
   saveSession() {
@@ -36,6 +57,7 @@ export class AuthService {
         localStorage.removeItem('user');
         this.logged = false;
       }
+      resolve();
     });
   }
 
@@ -50,8 +72,9 @@ export class AuthService {
 
   async loadSession() {
     return new Promise((resolve, reject) => {
-      this.token = localStorage.getItem('token');
-      this.userId = localStorage.getItem( 'user');
+        this.token = localStorage.getItem('token');
+        this.userId = localStorage.getItem('user');
+        resolve();
     });
   }
 

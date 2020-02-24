@@ -6,6 +6,8 @@ import { FormBuilder, FormGroup} from '@angular/forms';
 import { ProductoDTO} from '../../interface/dto/ProductoDTO';
 import { Marca} from '../../interface/bo/Marca';
 import { Proveedor} from '../../interface/bo/Proveedor';
+import {AuthService} from '../../services/auth.service';
+import {Acceso} from '../../interface/bo/Acceso';
 
 @Component({
   selector: 'app-producto',
@@ -30,6 +32,8 @@ export class ProductoComponent implements OnInit {
   marcas: Marca[];
   proveedores: Proveedor[];
 
+  public accesos: Acceso;
+
   selId: number;
   selName: string;
 
@@ -37,22 +41,23 @@ export class ProductoComponent implements OnInit {
   @ViewChild('deleteModal') public deleteModal: ModalDirective;
 
   constructor(private dataService: DataService,
-              public formBuilder: FormBuilder) { 
-    this.dataService.getAllItemsFromEntity('producto', '')
+              public formBuilder: FormBuilder,
+              private authService: AuthService) { 
+    this.dataService.getAllItemsFromEntity('producto', this.authService.token)
     .subscribe(res => {
       this.productos = (<Producto[]>res);
     }, error => {
       console.error(JSON.stringify(error));
     });
           
-    this.dataService.getAllItemsFromEntity( 'marca', '' )
+    this.dataService.getAllItemsFromEntity( 'marca', this.authService.token )
     .subscribe( resp => {
       this.marcas = (<Marca[]>resp);
     }, error => {
       console.error( JSON.stringify(error) );
     });
 
-    this.dataService.getAllItemsFromEntity( 'proveedor', '' )
+    this.dataService.getAllItemsFromEntity( 'proveedor', this.authService.token)
     .subscribe( resp => {
       this.proveedores = (<Proveedor[]>resp);
     }, error => {
@@ -68,6 +73,10 @@ export class ProductoComponent implements OnInit {
       marca: [''],
       observaciones: ['']
     });
+
+    console.log( this.authService.accesos )
+
+    this.accesos = this.authService.accesos.find( a => a.opcion === 'Productos');
 
   }
 
@@ -88,7 +97,7 @@ export class ProductoComponent implements OnInit {
     this.modalMode = 0;
     this.title='Consultar';
 
-    this.dataService.getEntityDetail('producto', '', id)
+    this.dataService.getEntityDetail('producto',  this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Producto>resp);
@@ -114,7 +123,7 @@ export class ProductoComponent implements OnInit {
   openToModify(id: number){
     this.modalMode = 2;
     this.title='Modificar';
-    this.dataService.getEntityDetail('producto', '', id)
+    this.dataService.getEntityDetail('producto',  this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Producto>resp);
@@ -142,7 +151,7 @@ export class ProductoComponent implements OnInit {
   }
 
   deleteReg( ) {
-    this.dataService.deleteEntity('producto', '', this.selId)
+    this.dataService.deleteEntity('producto',  this.authService.token, this.selId)
       .subscribe(resp => {
         this.reload();
         this.deleteModal.hide();
@@ -154,20 +163,20 @@ export class ProductoComponent implements OnInit {
   saveChanges() {
     console.log('Guardando cambios');
     const dto: ProductoDTO = {
-      proveedor: this.modalForm.value.proveedor,
+      idProveedor: this.modalForm.value.proveedor,
       nombre: this.modalForm.value.nombre,
       precioCosto: this.modalForm.value.precioCosto,
       precioVenta: this.modalForm.value.precioVenta,
-      marca: this.modalForm.value.marca,
+      idMarca: this.modalForm.value.marca,
       observaciones: this.modalForm.value.observaciones
     };
+    console.log(this.detail);
 
     console.log('Guardando cambios: ' + dto);
 
-
     if (this.modalMode === 1) {
       // Servicio para guardar nueva entidad
-      this.dataService.insertNewEntity('producto', '', dto)
+      this.dataService.insertNewEntity('producto', this.authService.token, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -180,7 +189,7 @@ export class ProductoComponent implements OnInit {
 
     } else if (this.modalMode === 2) {
       // se insertan los datos modificados con el servicio de edicion
-      this.dataService.editEntity('producto', '', this.detail.id, dto)
+      this.dataService.editEntity('producto', this.authService.token, this.detail.id, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -196,7 +205,7 @@ export class ProductoComponent implements OnInit {
   }
 
   reload() {
-    this.dataService.getAllItemsFromEntity( 'producto', '')
+    this.dataService.getAllItemsFromEntity( 'producto',  this.authService.token)
       .subscribe(resp => {
         this.productos = (<Producto[]> resp);
       }, error => {

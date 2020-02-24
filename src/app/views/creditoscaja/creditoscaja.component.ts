@@ -5,6 +5,8 @@ import { DataService } from '../../services/data.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {CreditoCajaDTO} from '../../interface/dto/CreditoCajaDTO';
 import { DatePipe } from '@angular/common';
+import {AuthService} from '../../services/auth.service';
+import {Acceso} from '../../interface/bo/Acceso';
 
 @Component({
   selector: 'app-creditoscaja',
@@ -27,6 +29,8 @@ export class CreditoscajaComponent implements OnInit {
   creditosCaja: CreditoCaja[];
   detail: CreditoCaja;
 
+  public accesos: Acceso;
+
   selId: number;
   selName: string;
   selDocumento: number;
@@ -35,8 +39,9 @@ export class CreditoscajaComponent implements OnInit {
   @ViewChild('deleteModal') public deleteModal: ModalDirective;
 
   constructor(private dataService: DataService,
-              public formBuilder: FormBuilder ) { 
-    this.dataService.getAllItemsFromEntity('creditoCaja', '')
+              public formBuilder: FormBuilder, 
+              private authService: AuthService) { 
+    this.dataService.getAllItemsFromEntity('creditoCaja', this.authService.token)
       .subscribe(res => {
         this.creditosCaja = (<CreditoCaja[]>res);
       }, error => {
@@ -52,6 +57,9 @@ export class CreditoscajaComponent implements OnInit {
       descripcion: [''],
       tipo: ['']
     });
+    console.log( this.authService.accesos )
+
+    this.accesos = this.authService.accesos.find( a => a.opcion === 'Abonos');
               
   }
 
@@ -83,7 +91,7 @@ export class CreditoscajaComponent implements OnInit {
     this.modalMode = 0;
     this.title='Consultar';
 
-    this.dataService.getEntityDetail('creditoCaja', '', id)
+    this.dataService.getEntityDetail('creditoCaja', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<CreditoCaja>resp);
@@ -109,7 +117,7 @@ export class CreditoscajaComponent implements OnInit {
     this.modalMode = 2;
     this.title='Modificar';
     
-    this.dataService.getEntityDetail('creditoCaja', '', id)
+    this.dataService.getEntityDetail('creditoCaja', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<CreditoCaja>resp);
@@ -138,7 +146,7 @@ export class CreditoscajaComponent implements OnInit {
   }
 
   deleteReg( ) {
-    this.dataService.deleteEntity('creditoCaja', '', this.selId)
+    this.dataService.deleteEntity('creditoCaja', this.authService.token, this.selId)
       .subscribe(resp => {
         this.reload();
         this.deleteModal.hide();
@@ -169,7 +177,7 @@ export class CreditoscajaComponent implements OnInit {
 
     if (this.modalMode === 1) {
       // Servicio para guardar nueva entidad
-      this.dataService.insertNewEntity('creditoCaja', '', dto)
+      this.dataService.insertNewEntity('creditoCaja', this.authService.token, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -182,7 +190,7 @@ export class CreditoscajaComponent implements OnInit {
 
     } else if (this.modalMode === 2) {
       // se insertan los datos modificados con el servicio de edicion
-      this.dataService.editEntity('creditoCaja', '', this.detail.id, dto)
+      this.dataService.editEntity('creditoCaja', this.authService.token, this.detail.id, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -197,7 +205,7 @@ export class CreditoscajaComponent implements OnInit {
   }
 
   reload() {
-    this.dataService.getAllItemsFromEntity( 'creditoCaja', '')
+    this.dataService.getAllItemsFromEntity( 'creditoCaja', this.authService.token)
       .subscribe(resp => {
         this.creditosCaja = (<CreditoCaja[]> resp);
       }, error => {

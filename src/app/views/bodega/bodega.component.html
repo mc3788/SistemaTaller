@@ -6,9 +6,9 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="cil-search"></i></span>
                 </div>
-                <input type="search" class="form-control" placeholder="Buscar" autocomplete="buscar" size="35" required>
+                <input class="form-control" type="search" [(ngModel)]="searchText" placeholder="Buscar" autocomplete="off" size="35" >
                 <div>
-                  <button type="button" class="btn btn-primary float-right" (click)="openToAdd()">+Nuevo</button>
+                  <button type="button" class="btn btn-primary float-right"  *ngIf="accesos.alta==='Y'" (click)="openToAdd()">+Nuevo</button>
                 </div>
             </div>
         </div>
@@ -24,7 +24,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let items of bodegas">
+            <tr *ngFor="let items of bodegas | filter: 'descripcion' : searchText">
               <td>{{items.id}}</td>
               <td>{{items.descripcion}}</td>
               <td>
@@ -34,9 +34,9 @@
                 </h5>
               </td>
               <td>
-                <button (click)="openToModify(items.id)" class="btn btn-warning text-white"><i class="cil-pencil"></i></button>
-                <button (click)="openToDelete(items.id, items.descripcion)" class="btn btn-danger text-white"><i class="cil-trash"></i></button>
-                <button (click)="openToVisualy(items.id)" class="btn btn-info text-white"><i class="cil-find-in-page"></i></button>
+                <button (click)="openToModify(items.id)" *ngIf="accesos.cambio==='Y'" class="btn btn-warning text-white"><i class="cil-pencil"></i></button>
+                <button (click)="openToDelete(items.id, items.descripcion)" *ngIf="accesos.cambio==='Y'" class="btn btn-danger text-white"><i class="cil-trash"></i></button>
+                <button (click)="openToVisualy(items.id)" *ngIf="accesos.cambio==='Y'" class="btn btn-info text-white"><i class="cil-find-in-page"></i></button>
               </td>
             </tr>
             

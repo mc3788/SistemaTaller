@@ -4,6 +4,9 @@ import {Perfil} from '../../interface/bo/Perfil';
 import { DataService } from '../../services/data.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {PerfilDTO} from '../../interface/dto/PerfilDTO';
+import {AuthService} from '../../services/auth.service';
+import {Acceso} from '../../interface/bo/Acceso';
+import {Opcion} from '../../interface/bo/Opcion';
 
 @Component({
   selector: 'app-categoria',
@@ -24,6 +27,10 @@ export class CategoriaComponent implements OnInit {
 
   perfiles: Perfil[];
   detail: Perfil;
+  accesosPerfil: Acceso[];
+  opcionesPerfil: Opcion[];
+
+  public accesos: Acceso;
 
   selId: number;
   selName: string;
@@ -31,15 +38,31 @@ export class CategoriaComponent implements OnInit {
 
   @ViewChild('entityModal') public entityModal: ModalDirective;
   @ViewChild('deleteModal') public deleteModal: ModalDirective;
+  @ViewChild('visualModal') public visualModal: ModalDirective;
 
   constructor(private dataService: DataService,
-    public formBuilder: FormBuilder ) { 
-    this.dataService.getAllItemsFromEntity( 'perfil', '' )
+              public formBuilder: FormBuilder,
+              private authService: AuthService ) { 
+    this.dataService.getAllItemsFromEntity( 'perfil', this.authService.token )
         .subscribe( resp => {
           this.perfiles = (<Perfil[]>resp);
         }, error => {
           console.error( JSON.stringify(error) );
         });
+
+    this.dataService.getAllItemsFromEntity( 'acceso', this.authService.token )
+    .subscribe( resp => {
+      this.accesosPerfil = (<Acceso[]>resp);
+    }, error => {
+      console.error( JSON.stringify(error) );
+    });
+
+    this.dataService.getAllItemsFromEntity( 'opcion', this.authService.token )
+    .subscribe( resp => {
+      this.opcionesPerfil = (<Opcion[]>resp);
+    }, error => {
+      console.error( JSON.stringify(error) );
+    });
 
     // Inicializa el form construyendolo con los campos
     this.modalForm = this.formBuilder.group({
@@ -47,6 +70,7 @@ export class CategoriaComponent implements OnInit {
       observaciones: ['']
     });
 
+    this.accesos = this.authService.accesos.find( a => a.opcion === 'Categorias');
   }
 
   openToAdd() {
@@ -62,7 +86,7 @@ export class CategoriaComponent implements OnInit {
     this.modalMode = 0;
     this.title = 'Consultar';
 
-    this.dataService.getEntityDetail('perfil', '', id)
+    this.dataService.getEntityDetail('perfil', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Perfil>resp);
@@ -80,11 +104,27 @@ export class CategoriaComponent implements OnInit {
     this.entityModal.show();
   }
 
+  openToAccess(id: number){
+    this.modalMode = 3;
+    this.title = 'Accesos';
+
+    this.dataService.getListItems('acceso/permissions', this.authService.token,id)
+    .subscribe( resp => {
+      this.accesosPerfil = (<Acceso[]>resp);
+      console.log(this.accesosPerfil);
+    }, error => {
+      console.error( JSON.stringify(error) );
+    });
+
+    this.visualModal.show();
+  }
+
+
   openToModify(id: number){
     this.modalMode = 2;
     this.title = 'Modificar';
 
-    this.dataService.getEntityDetail('perfil', '', id)
+    this.dataService.getEntityDetail('perfil', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Perfil>resp);
@@ -108,7 +148,7 @@ export class CategoriaComponent implements OnInit {
   }
 
   deleteReg( ) {
-    this.dataService.deleteEntity('perfil', '', this.selId)
+    this.dataService.deleteEntity('perfil', this.authService.token, this.selId)
       .subscribe(resp => {
         this.reload();
         this.deleteModal.hide();
@@ -133,7 +173,7 @@ export class CategoriaComponent implements OnInit {
 
     if (this.modalMode === 1) {
       // Servicio para guardar nueva entidad
-      this.dataService.insertNewEntity('perfil', '', dto)
+      this.dataService.insertNewEntity('perfil', this.authService.token, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -146,7 +186,7 @@ export class CategoriaComponent implements OnInit {
 
     } else if (this.modalMode === 2) {
       // se insertan los datos modificados con el servicio de edicion
-      this.dataService.editEntity('perfil', '', this.detail.id, dto)
+      this.dataService.editEntity('perfil', this.authService.token, this.detail.id, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -164,7 +204,7 @@ export class CategoriaComponent implements OnInit {
   }
 
   reload() {
-    this.dataService.getAllItemsFromEntity( 'perfil', '')
+    this.dataService.getAllItemsFromEntity( 'perfil', this.authService.token)
       .subscribe(resp => {
         this.perfiles = (<Perfil[]> resp);
       }, error => {

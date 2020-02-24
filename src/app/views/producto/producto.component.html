@@ -6,9 +6,11 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="cil-search"></i></span>
                 </div>
-                <input type="search" class="form-control" placeholder="Buscar" autocomplete="buscar" size="35" required>
+                <div class="search-hero">
+                  <input class="form-control" type="search" [(ngModel)]="searchText" placeholder="Buscar" autocomplete="off" size="35" >
+                </div>
                 <div>
-                  <button type="button" class="btn btn-primary float-right" (click)="openToAdd()">+Nuevo</button>
+                  <button type="button" class="btn btn-primary float-right" *ngIf="accesos.alta==='Y'" (click)="openToAdd()">+Nuevo</button>
                 </div>
 
             </div>
@@ -27,18 +29,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let items of productos">
+            <tr *ngFor="let items of productos | filter: 'nombre' : searchText">
               <td>{{items.id}}</td>
-              <!-- <td>Proveedor Nombre</td> -->
               <td>{{items.proveedor.nombre}}</td>
               <td>{{items.nombre}}</td>
               <td>{{items.precioVenta}}</td>
-              <!-- <td>Marca Nombre</td> -->
               <td>{{items.marca.nombre}}</td>
               <td>
-                <button (click)="openToModify(items.id)" class="btn btn-warning text-white"><i class="cil-pencil"></i></button>
-                <button (click)="openToDelete(items.id, items.nombre)" class="btn btn-danger text-white"><i class="cil-trash"></i></button>
-                <button (click)="openToVisualy(items.id)" class="btn btn-info text-white"><i class="cil-find-in-page"></i></button>
+                <button (click)="openToModify(items.id)" *ngIf="accesos.cambio==='Y'" class="btn btn-warning text-white"><i class="cil-pencil"></i></button>
+                <button (click)="openToDelete(items.id, items.nombre)" *ngIf="accesos.baja==='Y'" class="btn btn-danger text-white"><i class="cil-trash"></i></button>
+                <button (click)="openToVisualy(items.id)" *ngIf="accesos.consulta==='Y'" class="btn btn-info text-white"><i class="cil-find-in-page"></i></button>
               </td>
             </tr>
               
@@ -68,11 +68,10 @@
         <form class="form-horizontal" [formGroup]="modalForm" (ngSubmit)="saveChanges()">
           <div class="modal-body">
                       <div class="form-group">
-                        <label class="col-form-label" for="proveedorInput">Proveedor</label>
+                        <label class="col-form-label" for="proveedorSelect">Proveedor</label>
                         <div class="controls">
-                          <div class="input-group">
-                            <!-- <input id="proveedorInput" class="form-control" formControlName="proveedor" size="16" type="text" [disableControl]="modalMode===0"> -->
-                            <select id="proveedorSelect" class="form-control" formControlName="proveedor" name="proveedorlSelect" [disableControl]="modalMode===0">
+                          <div class="input-prepend input-group">
+                            <select id="proveedorSelect" class="form-control" formControlName="proveedor" name="proveedorSelect" [disableControl]="modalMode===0">
                               <option *ngFor="let p of proveedores" value="{{p.id}}">{{p.nombre}}</option>
                             </select>
                           </div>
@@ -87,9 +86,9 @@
                         </div>
                       </div>
                       <div class="form-group">
-                          <label class="col-form-label" for="marcaInput">Marca</label>
+                          <label class="col-form-label" for="marcaSelect">Marca</label>
                           <div class="controls">
-                            <div class="input-group">
+                            <div class="input-prepend input-group">
                               <!-- <input id="marcaInput" class="form-control" formControlName="marca" size="16" type="text" [disableControl]="modalMode===0"> -->
                               <select id="marcaSelect" class="form-control" formControlName="marca" name="marcaSelect" [disableControl]="modalMode===0">
                                 <option *ngFor="let m of marcas" value="{{m.id}}">{{m.nombre}}</option>

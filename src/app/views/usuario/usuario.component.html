@@ -6,10 +6,12 @@
           <div class="input-group-prepend">
             <span class="input-group-text"><i class="cil-search"></i></span>
           </div>
-          <input type="search" class="form-control" placeholder="Buscar" autocomplete="buscar" size="35" required>
+          <div class="search-hero">
+            <input class="form-control" type="search" [(ngModel)]="searchText" placeholder="Buscar" autocomplete="off" size="35" >
+          </div>
         </div>
         <div class="col-2">
-          <button type="button" class="btn btn-primary float-right" (click)="openToAdd()">+Nuevo</button>
+          <button type="button" class="btn btn-primary float-right" *ngIf="accesos.alta==='Y'" (click)="openToAdd()">+Nuevo</button>
         </div>
       </div>
     </div>
@@ -26,7 +28,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let items of usuarios">
+        <tr *ngFor="let items of usuarios | filter: 'nombre' : searchText">
           <td>{{items.id}}</td>
           <td>{{items.usuario}}</td>
           <td>{{items.nombre}}</td>
@@ -38,9 +40,9 @@
             </h5>
           </td>
           <td>
-            <button (click)="openToModify(items.id)" class="btn btn-warning text-white"><i class="cil-pencil"></i></button>
-            <button (click)="openToDelete(items.id, items.usuario)" class="btn btn-danger text-white"><i class="cil-trash"></i></button>
-            <button (click)="openToVisualy(items.id)" class="btn btn-info text-white"><i class="cil-find-in-page"></i></button>
+            <button (click)="openToModify(items.id)" *ngIf="accesos.cambio==='Y'" class="btn btn-warning text-white"><i class="cil-pencil"></i></button>
+            <button (click)="openToDelete(items.id, items.usuario)" *ngIf="accesos.baja==='Y'" class="btn btn-danger text-white"><i class="cil-trash"></i></button>
+            <button (click)="openToVisualy(items.id)" *ngIf="accesos.consulta==='Y'" class="btn btn-info text-white"><i class="cil-find-in-page"></i></button>
           </td>
         </tr>
         </tbody>
@@ -58,7 +60,8 @@
   </div>
 </div>
 
-<div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
   <div class="modal-dialog modal-primary" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -113,6 +116,8 @@
 
             </select>
           </div>
+
+
         </div>
         <div class="modal-footer">
           <button class="btn btn-secondary btn-secondary" type="button" (click)="dismiss()">Cancelar</button>

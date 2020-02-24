@@ -4,6 +4,8 @@ import {Cliente} from '../../interface/bo/Cliente';
 import { DataService } from '../../services/data.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {ClienteDTO} from '../../interface/dto/ClienteDTO';
+import {AuthService} from '../../services/auth.service';
+import {Acceso} from '../../interface/bo/Acceso';
 
 @Component({
   selector: 'app-cliente',
@@ -26,6 +28,8 @@ export class ClienteComponent implements OnInit {
   clientes: Cliente[];
   detail: Cliente;
 
+  public accesos: Acceso;
+
   selId: number;
   selName: string;
 
@@ -33,8 +37,9 @@ export class ClienteComponent implements OnInit {
   @ViewChild('deleteModal') public deleteModal: ModalDirective;
 
   constructor(private dataService: DataService,
-              public formBuilder: FormBuilder) {
-    this.dataService.getAllItemsFromEntity('cliente', '')
+              public formBuilder: FormBuilder,
+              private authService: AuthService) {
+    this.dataService.getAllItemsFromEntity('cliente', this.authService.token)
     .subscribe(res => {
       this.clientes = (<Cliente[]>res);
     }, error => {
@@ -48,7 +53,12 @@ export class ClienteComponent implements OnInit {
       telefono: [''],
       direccion: [''],
       observaciones: ['']
+
     });
+
+    console.log( this.authService.accesos )
+
+    this.accesos = this.authService.accesos.find( a => a.opcion === 'Clientes');
 
   }
 
@@ -69,7 +79,7 @@ export class ClienteComponent implements OnInit {
     this.modalMode = 0;
     this.title='Consultar';
 
-    this.dataService.getEntityDetail('cliente', '', id)
+    this.dataService.getEntityDetail('cliente', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Cliente>resp);
@@ -94,7 +104,7 @@ export class ClienteComponent implements OnInit {
     this.modalMode = 2;
     this.title='Modificar';
     
-    this.dataService.getEntityDetail('cliente', '', id)
+    this.dataService.getEntityDetail('cliente', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Cliente>resp);
@@ -125,7 +135,7 @@ export class ClienteComponent implements OnInit {
   }
 
   deleteReg( ) {
-    this.dataService.deleteEntity('cliente', '', this.selId)
+    this.dataService.deleteEntity('cliente', this.authService.token, this.selId)
       .subscribe(resp => {
         this.reload();
         this.deleteModal.hide();
@@ -149,7 +159,7 @@ export class ClienteComponent implements OnInit {
 
     if (this.modalMode === 1) {
       // Servicio para guardar nueva entidad
-      this.dataService.insertNewEntity('cliente', '', dto)
+      this.dataService.insertNewEntity('cliente', this.authService.token, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -162,7 +172,7 @@ export class ClienteComponent implements OnInit {
 
     } else if (this.modalMode === 2) {
       // se insertan los datos modificados con el servicio de edicion
-      this.dataService.editEntity('cliente', '', this.detail.id, dto)
+      this.dataService.editEntity('cliente', this.authService.token, this.detail.id, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -181,7 +191,7 @@ export class ClienteComponent implements OnInit {
   }
 
   reload() {
-    this.dataService.getAllItemsFromEntity( 'cliente', '')
+    this.dataService.getAllItemsFromEntity( 'cliente', this.authService.token)
       .subscribe(resp => {
         this.clientes = (<Cliente[]> resp);
       }, error => {

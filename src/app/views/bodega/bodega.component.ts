@@ -4,6 +4,8 @@ import {Bodega} from '../../interface/bo/Bodega';
 import { DataService } from '../../services/data.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {BodegaDTO} from '../../interface/dto/BodegaDTO';
+import {AuthService} from '../../services/auth.service';
+import {Acceso} from '../../interface/bo/Acceso';
 
 @Component({
   selector: 'app-bodega',
@@ -25,6 +27,8 @@ export class BodegaComponent implements OnInit {
   bodegas: Bodega[];
   detail: Bodega;
 
+  public accesos: Acceso;
+
   selId: number;
   selName: string;
 
@@ -33,8 +37,9 @@ export class BodegaComponent implements OnInit {
 
 
   constructor(private dataService: DataService,
-              public formBuilder: FormBuilder ) { 
-      this.dataService.getAllItemsFromEntity('bodega', '')
+              public formBuilder: FormBuilder,
+              private authService: AuthService ) { 
+      this.dataService.getAllItemsFromEntity('bodega', this.authService.token)
       .subscribe(res => {
         this.bodegas = (<Bodega[]>res);
       }, error => {
@@ -47,6 +52,11 @@ export class BodegaComponent implements OnInit {
       observaciones: [''],
       estado: [0]
     });
+
+    console.log( this.authService.accesos )
+
+    this.accesos = this.authService.accesos.find( a => a.opcion === 'Bodegas');
+
   }
 
   openToAdd() {
@@ -65,7 +75,7 @@ export class BodegaComponent implements OnInit {
     this.modalMode = 0;
     this.title='Consultar';
 
-    this.dataService.getEntityDetail('bodega', '', id)
+    this.dataService.getEntityDetail('bodega', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Bodega>resp);
@@ -89,7 +99,7 @@ export class BodegaComponent implements OnInit {
   openToModify(id: number){
     this.modalMode = 2;
     this.title='Modificar';
-    this.dataService.getEntityDetail('bodega', '', id)
+    this.dataService.getEntityDetail('bodega', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Bodega>resp);
@@ -119,7 +129,7 @@ export class BodegaComponent implements OnInit {
   }
 
   deleteReg( ) {
-    this.dataService.deleteEntity('bodega', '', this.selId)
+    this.dataService.deleteEntity('bodega', this.authService.token, this.selId)
       .subscribe(resp => {
         this.reload();
         this.deleteModal.hide();
@@ -141,7 +151,7 @@ export class BodegaComponent implements OnInit {
 
     if (this.modalMode === 1) {
       // Servicio para guardar nueva entidad
-      this.dataService.insertNewEntity('bodega', '', dto)
+      this.dataService.insertNewEntity('bodega', this.authService.token, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -154,7 +164,7 @@ export class BodegaComponent implements OnInit {
 
     } else if (this.modalMode === 2) {
       // se insertan los datos modificados con el servicio de edicion
-      this.dataService.editEntity('bodega', '', this.detail.id, dto)
+      this.dataService.editEntity('bodega', this.authService.token, this.detail.id, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -167,7 +177,7 @@ export class BodegaComponent implements OnInit {
     this.entityModal.show();
   }
   reload() {
-    this.dataService.getAllItemsFromEntity( 'bodega', '')
+    this.dataService.getAllItemsFromEntity( 'bodega', this.authService.token,)
       .subscribe(resp => {
         this.bodegas = (<Bodega[]> resp);
       }, error => {

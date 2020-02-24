@@ -5,18 +5,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CategoriaRoutingModule } from './categoria-routing.module';
 import { CategoriaComponent } from './categoria.component';
 import {DirectivesModule} from '../../directives/directives.module';
-import { FilterPipe } from '../../filter.pipe';
-
+import {PipesModule} from '../../containers/pipes/pipes.module';
 
 @NgModule({
-  declarations: [CategoriaComponent,FilterPipe],
+  declarations: [CategoriaComponent],
   imports: [
     ModalModule.forRoot(),
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     CategoriaRoutingModule,
-    DirectivesModule
+    DirectivesModule,
+    PipesModule
   ]
 })
 export class CategoriaModule { }

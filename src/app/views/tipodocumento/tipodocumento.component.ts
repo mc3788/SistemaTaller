@@ -4,6 +4,8 @@ import {TipoDocumento} from '../../interface/bo/TipoDocumento';
 import { DataService } from '../../services/data.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {TipoDocumentoDTO} from '../../interface/dto/TipoDocumentoDTO';
+import {AuthService} from '../../services/auth.service';
+import {Acceso} from '../../interface/bo/Acceso';
 
 @Component({
   selector: 'app-tipodocumento',
@@ -25,6 +27,8 @@ export class TipodocumentoComponent implements OnInit {
   tiposDocumentos: TipoDocumento[];
   detail: TipoDocumento;
 
+  public accesos: Acceso;
+
   selId: number;
   selName: string;
 
@@ -33,8 +37,9 @@ export class TipodocumentoComponent implements OnInit {
   @ViewChild('deleteModal') public deleteModal: ModalDirective;
 
   constructor(private dataService: DataService,
-              public formBuilder: FormBuilder ) {
-    this.dataService.getAllItemsFromEntity('tipoDocumento', '')
+              public formBuilder: FormBuilder,
+              private authService: AuthService ) {
+    this.dataService.getAllItemsFromEntity('tipoDocumento', this.authService.token)
     .subscribe(res => {
       this.tiposDocumentos = (<TipoDocumento[]>res);
     }, error => {
@@ -46,6 +51,8 @@ export class TipodocumentoComponent implements OnInit {
       descripcion: [''],
       operacion: ['']
     });
+    this.accesos = this.authService.accesos.find( a => a.opcion === 'Tipos Documento');
+
   }
 
   openToAdd() {
@@ -60,7 +67,7 @@ export class TipodocumentoComponent implements OnInit {
   openToVisualy(id: number){
     this.modalMode = 0;
     this.title='Consultar';
-    this.dataService.getEntityDetail('tipoDocumento', '', id)
+    this.dataService.getEntityDetail('tipoDocumento', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<TipoDocumento>resp);
@@ -81,7 +88,7 @@ export class TipodocumentoComponent implements OnInit {
     this.modalMode = 2;
     this.title='Modificar';
     
-    this.dataService.getEntityDetail('tipoDocumento', '', id)
+    this.dataService.getEntityDetail('tipoDocumento', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<TipoDocumento>resp);
@@ -108,7 +115,7 @@ export class TipodocumentoComponent implements OnInit {
       this.entityModal.hide();
   }
   deleteReg( ) {
-    this.dataService.deleteEntity('tipoDocumento', '', this.selId)
+    this.dataService.deleteEntity('tipoDocumento', this.authService.token, this.selId)
       .subscribe(resp => {
         this.reload();
         this.deleteModal.hide();
@@ -128,7 +135,7 @@ export class TipodocumentoComponent implements OnInit {
 
     if (this.modalMode === 1) {
       // Servicio para guardar nueva entidad
-      this.dataService.insertNewEntity('tipoDocumento', '', dto)
+      this.dataService.insertNewEntity('tipoDocumento', this.authService.token, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -141,7 +148,7 @@ export class TipodocumentoComponent implements OnInit {
 
     } else if (this.modalMode === 2) {
       // se insertan los datos modificados con el servicio de edicion
-      this.dataService.editEntity('tipoDocumento', '', this.detail.id, dto)
+      this.dataService.editEntity('tipoDocumento', this.authService.token, this.detail.id, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -159,7 +166,7 @@ export class TipodocumentoComponent implements OnInit {
   ngOnInit() {
   }
   reload() {
-    this.dataService.getAllItemsFromEntity( 'tipoDocumento', '')
+    this.dataService.getAllItemsFromEntity( 'tipoDocumento', this.authService.token)
       .subscribe(resp => {
         this.tiposDocumentos = (<TipoDocumento[]> resp);
       }, error => {

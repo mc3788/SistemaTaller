@@ -5,6 +5,8 @@ import { DataService } from '../../services/data.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {UsuarioDTO} from '../../interface/dto/UsuarioDTO';
 import {Perfil} from '../../interface/bo/Perfil';
+import {AuthService} from '../../services/auth.service';
+import {Acceso} from '../../interface/bo/Acceso';
 
 @Component({
   selector: 'app-usuario',
@@ -29,6 +31,8 @@ export class UsuarioComponent implements OnInit {
   detail: Usuario;
   perfiles: Perfil[];
 
+  public accesos: Acceso;
+
   selId: number;
   selName: string;
 
@@ -36,15 +40,17 @@ export class UsuarioComponent implements OnInit {
   @ViewChild('deleteModal') public deleteModal: ModalDirective;
 
   constructor(private dataService: DataService,
-              public formBuilder: FormBuilder ) {
-    this.dataService.getAllItemsFromEntity('usuario', '')
+              public formBuilder: FormBuilder,
+              private authService: AuthService) {
+    this.dataService.getAllItemsFromEntity('usuario', this.authService.token)
       .subscribe(res => {
         this.usuarios = (<Usuario[]>res);
       }, error => {
-        console.error(JSON.stringify(error));
+        console.error(error);
+        this.dataService.validError( error );
       });
 
-    this.dataService.getAllItemsFromEntity( 'perfil', '' )
+    this.dataService.getAllItemsFromEntity( 'perfil', this.authService.token )
         .subscribe( resp => {
           this.perfiles = (<Perfil[]>resp);
         }, error => {
@@ -59,6 +65,10 @@ export class UsuarioComponent implements OnInit {
       password: [''],
       estado: [0]
     });
+
+    console.log( this.authService.accesos )
+
+    this.accesos = this.authService.accesos.find( a => a.opcion === 'Usuarios');
 
   }
 
@@ -81,7 +91,7 @@ export class UsuarioComponent implements OnInit {
     this.modalMode = 0;
     this.title = 'Consultar';
 
-    this.dataService.getEntityDetail('usuario', '', id)
+    this.dataService.getEntityDetail('usuario', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Usuario>resp);
@@ -106,7 +116,7 @@ export class UsuarioComponent implements OnInit {
     this.modalMode = 2;
     this.title = 'Modificar';
 
-    this.dataService.getEntityDetail('usuario', '', id)
+    this.dataService.getEntityDetail('usuario', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Usuario>resp);
@@ -133,7 +143,7 @@ export class UsuarioComponent implements OnInit {
   }
 
   deleteReg( ) {
-    this.dataService.deleteEntity('usuario', '', this.selId)
+    this.dataService.deleteEntity('usuario', this.authService.token, this.selId)
       .subscribe(resp => {
         this.reload();
         this.deleteModal.hide();
@@ -161,7 +171,7 @@ export class UsuarioComponent implements OnInit {
 
     if (this.modalMode === 1) {
       // Servicio para guardar nueva entidad
-      this.dataService.insertNewEntity('usuario', '', dto)
+      this.dataService.insertNewEntity('usuario', this.authService.token, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -174,7 +184,7 @@ export class UsuarioComponent implements OnInit {
 
     } else if (this.modalMode === 2) {
       // se insertan los datos modificados con el servicio de edicion
-      this.dataService.editEntity('usuario', '', this.detail.id, dto)
+      this.dataService.editEntity('usuario', this.authService.token, this.detail.id, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();
@@ -190,14 +200,13 @@ export class UsuarioComponent implements OnInit {
   }
 
   reload() {
-    this.dataService.getAllItemsFromEntity( 'usuario', '')
+    this.dataService.getAllItemsFromEntity( 'usuario', this.authService.token)
       .subscribe(resp => {
         this.usuarios = (<Usuario[]> resp);
       }, error => {
         console.error( JSON.stringify(error) );
       });
   }
-
 
 
 }

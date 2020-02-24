@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FormsModule,ReactiveFormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { DataService } from './services/data.service';
 
@@ -12,6 +12,8 @@ import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import { HttpClientModule } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
 import localeGt from '@angular/common/locales/es-GT';
+import {PipesModule} from './containers/pipes/pipes.module';
+import { GoogleChartsModule } from 'angular-google-charts';
 
 registerLocaleData( localeGt, 'es-GT' );
 
@@ -39,7 +41,9 @@ import {
 
 // Import routing module
 import { AppRoutingModule } from './app.routing';
-// import { FilterPipe } from './filter.pipe';
+import {AlertModule} from 'ngx-bootstrap';
+import {AuthService} from './services/auth.service';
+import {AuthGuardService} from './services/auth-guard.service';
 
 @NgModule({
   imports: [
@@ -52,21 +56,23 @@ import { AppRoutingModule } from './app.routing';
     AppHeaderModule,
     AppSidebarModule,
     FormsModule,
+    ReactiveFormsModule,
+    AlertModule.forRoot(),
     BsDropdownModule.forRoot(),
     PerfectScrollbarModule,
     HttpClientModule,
-    ReactiveFormsModule
+    PipesModule,
+    GoogleChartsModule.forRoot()
   ],
   declarations: [
     AppComponent,
     ...APP_CONTAINERS,
     LoginComponent,
-    // FilterPipe
   ],
   providers: [{
     provide: LocationStrategy,
     useClass: HashLocationStrategy
-  }, DataService],
+  }, DataService, AuthService, AuthGuardService],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
