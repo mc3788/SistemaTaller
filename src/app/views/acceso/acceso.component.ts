@@ -113,7 +113,7 @@ export class AccesoComponent implements OnInit {
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           perfil: [this.detail.idPerfil],
-          // opcion: [this.detail.idOpcion],
+          opcion: [this.detail.idOpcion],
           alta: [this.detail.alta],
           baja: [this.detail.baja],
           cambio: [this.detail.cambio],
@@ -138,7 +138,7 @@ export class AccesoComponent implements OnInit {
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           perfil: [this.detail.idPerfil],
-          // opcion: [this.detail.idOpcion],
+          opcion: [this.detail.idOpcion],
           alta: [this.detail.alta],
           baja: [this.detail.baja],
           cambio: [this.detail.cambio],
