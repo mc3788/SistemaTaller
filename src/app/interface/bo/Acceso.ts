@@ -1,6 +1,7 @@
 export class Acceso {
   id: number;
   idPerfil: number;
+  idOpcion: number;
   opcion: string;
   alta:   string;
   baja:   string;
@@ -10,6 +11,7 @@ export class Acceso {
   constructor( 
                id: number,
                idPerfil: number,
+               idOpcion: number,
                opcion: string,
                alta:   string,
                baja:   string,
@@ -23,6 +25,7 @@ export class Acceso {
     this.baja = baja;
     this.cambio = cambio;
     this.consulta = consulta;
+    this.idOpcion = idOpcion;
   }
 
 }
