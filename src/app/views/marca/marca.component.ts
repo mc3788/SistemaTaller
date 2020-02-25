@@ -2,7 +2,7 @@ import { Component, OnInit,ViewChild } from '@angular/core';
 import {ModalDirective} from 'ngx-bootstrap/modal';
 import {Marca} from '../../interface/bo/Marca';
 import { DataService } from '../../services/data.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MarcaDTO} from '../../interface/dto/MarcaDTO';
 import {AuthService} from '../../services/auth.service';
 import {Acceso} from '../../interface/bo/Acceso';
@@ -16,6 +16,8 @@ export class MarcaComponent implements OnInit {
 
   title='';
 
+  invalidName = false;
+
 
   // 0: View, 1: Add, 2: Modify
   modalMode = 0;
@@ -24,7 +26,7 @@ export class MarcaComponent implements OnInit {
   existsErrorTitle = '';
 
   // objecto que controla validaciones y valores del form
-  modalForm: FormGroup;
+  public modalForm: FormGroup;
 
   marcas: Marca[];
   detail: Marca;
@@ -44,13 +46,14 @@ export class MarcaComponent implements OnInit {
     .subscribe(res => {
       this.marcas = (<Marca[]>res);
     }, error => {
-                  console.error(JSON.stringify(error));
+      console.error(JSON.stringify(error));
     });
     
     // Inicializa el form construyendolo con los campos
     this.modalForm = this.formBuilder.group({
       nombre: ['']
       });
+
 
     console.log( this.authService.accesos )
 
@@ -61,8 +64,9 @@ export class MarcaComponent implements OnInit {
     this.modalMode = 1;
     this.title='Agregar';
     this.modalForm = this.formBuilder.group({
-      nombre: ['']
+      nombre: ['', [Validators.required]]
     });
+    
     this.entityModal.show();
   }
   openToVisualy(id: number){
@@ -122,9 +126,19 @@ export class MarcaComponent implements OnInit {
   }
 
   saveChanges() {
+    
+    this.invalidName = false;
+
+      let name = this.modalForm.value.nombre;
+
+      if( name === null || name === "" ){
+        this.invalidName = true;
+        return;
+      }
+    
     console.log('Guardando cambios');
     const dto: MarcaDTO = {
-      nombre: this.modalForm.value.nombre
+      nombre: name
     };
 
     console.log('Guardando cambios: ' + dto);
