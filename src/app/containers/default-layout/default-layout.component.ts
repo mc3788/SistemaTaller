@@ -3,7 +3,7 @@ import {Component} from '@angular/core';
 import { navItems } from '../../_nav';
 import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
-import {INavData} from '../../../../projects/coreui/angular/src/lib/sidebar/app-sidebar-nav';
+import {INavData} from '@coreui/angular';
 import {Acceso} from '../../interface/bo/Acceso';
 
 @Component({

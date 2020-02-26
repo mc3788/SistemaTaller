@@ -65,7 +65,7 @@
                   <label class="col-form-label" for="perfilSelect">Perfil</label>
 
                        <select id="perfilSelect" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.perfilSelect.errors }"
-                               formControlName="perfil" name="perfilSelect" [disableControl]="modalMode!=0">
+                               formControlName="perfil" name="perfilSelect" [disableControl]="modalMode===0">
                         <option *ngFor="let p of perfiles" value="{{p.id}}">{{p.descripcion}}</option>
                       </select>
                   <div *ngIf="submitted && f.perfilSelect.errors" class="invalid-feedback">
@@ -76,7 +76,7 @@
                   <label class="col-form-label" for="opcionSelect">Opción</label>
 
                       <select id="opcionSelect" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.optionSelect.errors }"
-                              formControlName="opcion" name="opcionSelect" [disableControl]="modalMode!=0">
+                              formControlName="opcion" name="opcionSelect" [disableControl]="modalMode===0">
                         <option *ngFor="let op of opciones" value="{{op.id}}">{{op.descripcion}}</option>
                       </select>
                   <div *ngIf="submitted && f.optionSelect.errors" class="invalid-feedback">
