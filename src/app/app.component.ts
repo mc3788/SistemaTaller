@@ -15,6 +15,9 @@ export class AppComponent implements OnInit {
         this.authService.logged = true;
         this.authService.loadAccess().then( () => {
           router.navigate(['/dashboard']);
+        }).catch( () => {
+          this.authService.logged = false;
+          router.navigate(['/login']);
         });
 
       } else {

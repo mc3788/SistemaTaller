@@ -1,8 +1,8 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {ModalDirective} from 'ngx-bootstrap/modal';
 import {Cliente} from '../../interface/bo/Cliente';
 import { DataService } from '../../services/data.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ClienteDTO} from '../../interface/dto/ClienteDTO';
 import {AuthService} from '../../services/auth.service';
 import {Acceso} from '../../interface/bo/Acceso';
@@ -13,8 +13,11 @@ import {Acceso} from '../../interface/bo/Acceso';
   styleUrls: ['./cliente.component.css']
 })
 export class ClienteComponent implements OnInit {
-  
-  title='';
+
+  title = '';
+  searchText = '';
+
+  submitted = false;
 
   // 0: View, 1: Add, 2: Modify
   modalMode = 0;
@@ -48,23 +51,23 @@ export class ClienteComponent implements OnInit {
 
      // Inicializa el form construyendolo con los campos
      this.modalForm = this.formBuilder.group({
-      nit: [''],
-      nombre: [''],
+      nit: ['', Validators.required],
+      nombre: ['', Validators.required],
       telefono: [''],
       direccion: [''],
       observaciones: ['']
 
     });
 
-    console.log( this.authService.accesos )
-
     this.accesos = this.authService.accesos.find( a => a.opcion === 'Clientes');
 
   }
 
+  get f() { return this.modalForm.controls; }
+
   openToAdd() {
+    this.submitted = false;
     this.modalMode = 1;
-    this.title='Agregar';
     this.title = 'Agregar';
     this.modalForm = this.formBuilder.group({
       nit: [''],
@@ -75,15 +78,16 @@ export class ClienteComponent implements OnInit {
     });
     this.entityModal.show();
   }
-  openToVisualy(id: number){
+  openToVisualy(id: number) {
+    this.submitted = false;
     this.modalMode = 0;
-    this.title='Consultar';
+    this.title = 'Consultar';
 
     this.dataService.getEntityDetail('cliente', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Cliente>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           nit: [this.detail.nit],
@@ -100,15 +104,16 @@ export class ClienteComponent implements OnInit {
 
     this.entityModal.show();
   }
-  openToModify(id: number){
+  openToModify(id: number) {
+    this.submitted = false;
     this.modalMode = 2;
-    this.title='Modificar';
-    
+    this.title = 'Modificar';
+
     this.dataService.getEntityDetail('cliente', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Cliente>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           nit: [this.detail.nit],
@@ -123,7 +128,8 @@ export class ClienteComponent implements OnInit {
         console.error(JSON.stringify(error2));
       });
   }
-  openToDelete(id: number, name: string){
+  openToDelete(id: number, name: string) {
+    this.submitted = false;
     this.selId = id;
     this.selName = name;
     this.title = 'Eliminar';
@@ -145,7 +151,12 @@ export class ClienteComponent implements OnInit {
   }
 
   saveChanges() {
-    console.log('Guardando cambios');
+    this.submitted = true;
+
+    if (this.modalForm.invalid) {
+      return;
+    }
+
     const dto: ClienteDTO = {
       nit: this.modalForm.value.nit,
       nombre: this.modalForm.value.nombre,
@@ -153,9 +164,6 @@ export class ClienteComponent implements OnInit {
       direccion: this.modalForm.value.direccion,
       observaciones: this.modalForm.value.observaciones
     };
-
-    console.log('Guardando cambios: ' + dto);
-
 
     if (this.modalMode === 1) {
       // Servicio para guardar nueva entidad
@@ -186,7 +194,7 @@ export class ClienteComponent implements OnInit {
     this.entityModal.show();
 
   }
-  
+
   ngOnInit() {
   }
 

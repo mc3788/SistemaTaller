@@ -41,7 +41,7 @@
                 <button (click)="openToVisualy(items.id)" *ngIf="accesos.consulta==='Y'" class="btn btn-info text-white"><i class="cil-find-in-page"></i></button>
               </td>
             </tr>
-              
+
           </tbody>
         </table>
         <!-- <ul class="pagination">
@@ -54,62 +54,66 @@
         </ul> -->
       </div>
     </div>
-  </div> 
+  </div>
 
-  <div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="entityModal" aria-hidden="true">
-    <div class="modal-dialog modal-primary modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">{{title}}</h4>
-          <button type="button" class="close" (click)="entityModal.hide()" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
+<div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-primary" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">{{title}}</h4>
+        <button type="button" class="close" (click)="entityModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
         <form class="form-horizontal" [formGroup]="modalForm" (ngSubmit)="saveChanges()">
           <div class="modal-body">
                       <div class="form-group">
                         <label class="col-form-label" for="proveedorSelect">Proveedor</label>
-                        <div class="controls">
-                          <div class="input-prepend input-group">
-                            <select id="proveedorSelect" class="form-control" formControlName="proveedor" name="proveedorSelect" [disableControl]="modalMode===0">
+
+                            <select id="proveedorSelect" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.proveedor.errors }" formControlName="proveedor" name="proveedorSelect" [disableControl]="modalMode===0" required>
                               <option *ngFor="let p of proveedores" value="{{p.id}}">{{p.nombre}}</option>
                             </select>
-                          </div>
+                        <div *ngIf="submitted && f.proveedor.errors" class="invalid-feedback">
+                          <div *ngIf="f.proveedor.errors.required">El proveedor es requerido</div>
                         </div>
+
                       </div>
                       <div class="form-group">
                         <label class="col-form-label" for="nombreInput">Nombre</label>
-                        <div class="controls">
-                          <div class="input-prepend input-group">
-                            <input id="nombreInput" class="form-control" formControlName="nombre" size="16" type="text" [disableControl]="modalMode===0">
-                          </div>
+
+                        <input id="nombreInput" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.nombre.errors }" formControlName="nombre" size="16" type="text" [disableControl]="modalMode===0" required>
+                        <div *ngIf="submitted && f.nombre.errors" class="invalid-feedback">
+                          <div *ngIf="f.nombre.errors.required">El nombre es requerido</div>
                         </div>
+
                       </div>
                       <div class="form-group">
                           <label class="col-form-label" for="marcaSelect">Marca</label>
-                          <div class="controls">
-                            <div class="input-prepend input-group">
-                              <!-- <input id="marcaInput" class="form-control" formControlName="marca" size="16" type="text" [disableControl]="modalMode===0"> -->
-                              <select id="marcaSelect" class="form-control" formControlName="marca" name="marcaSelect" [disableControl]="modalMode===0">
+
+
+                              <select id="marcaSelect" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.marca.errors }" formControlName="marca" name="marcaSelect" [disableControl]="modalMode===0" required>
                                 <option *ngFor="let m of marcas" value="{{m.id}}">{{m.nombre}}</option>
                               </select>
-                            </div>
-                          </div>
+                           <div *ngIf="submitted && f.marca.errors" class="invalid-feedback">
+                            <div *ngIf="f.marca.errors.required">La marca es requerida</div>
+                           </div>
+
                       </div>
                       <div class="form-group">
                         <label class="col-form-label" for="precioCostoInput">Precio Costo</label>
-                        <div class="controls">
-                          <div class="input-group">
-                            <input id="precioCostoInput" class="form-control" formControlName="precioCosto" size="16" type="number" [disableControl]="modalMode===0">
-                          </div>
+
+                            <input id="precioCostoInput" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.precioCosto.errors }"  formControlName="precioCosto" size="16" type="number" [disableControl]="modalMode===0" required>
+                        <div *ngIf="submitted && f.precioCosto.errors" class="invalid-feedback">
+                          <div *ngIf="f.precioCosto.errors.required">La marca es requerida</div>
                         </div>
                       </div>
                       <div class="form-group">
                           <label class="col-form-label" for="precioVentaInput">Precio Venta</label>
-                          <div class="controls">
-                            <div class="input-group">
-                              <input id="precioVentaInput" class="form-control" formControlName="precioVenta" size="16" type="number" [disableControl]="modalMode===0">
-                            </div>
+
+                              <input id="precioVentaInput" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.precioVenta.errors }" formControlName="precioVenta" size="16" type="number" [disableControl]="modalMode===0" required>
+                          <div *ngIf="submitted && f.precioVenta.errors" class="invalid-feedback">
+                            <div *ngIf="f.precioVenta.errors.required">La marca es requerida</div>
                           </div>
                       </div>
                       <div class="form-group">
@@ -129,7 +133,7 @@
       </div>
     </div>
   </div><!-- /.modal -->
-  
+
 
 <!--Modal de Eliminacion-->
 <div bsModal #deleteModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"

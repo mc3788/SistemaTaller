@@ -1,8 +1,8 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {ModalDirective} from 'ngx-bootstrap/modal';
 import {CreditoCaja} from '../../interface/bo/CreditoCaja';
 import { DataService } from '../../services/data.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {CreditoCajaDTO} from '../../interface/dto/CreditoCajaDTO';
 import { DatePipe } from '@angular/common';
 import {AuthService} from '../../services/auth.service';
@@ -15,7 +15,10 @@ import {Acceso} from '../../interface/bo/Acceso';
 })
 export class CreditoscajaComponent implements OnInit {
 
-  title='';
+  title = '';
+  searchText = '';
+
+  submitted = false;
 
   // 0: View, 1: Add, 2: Modify
   modalMode = 0;
@@ -39,8 +42,8 @@ export class CreditoscajaComponent implements OnInit {
   @ViewChild('deleteModal') public deleteModal: ModalDirective;
 
   constructor(private dataService: DataService,
-              public formBuilder: FormBuilder, 
-              private authService: AuthService) { 
+              public formBuilder: FormBuilder,
+              private authService: AuthService) {
     this.dataService.getAllItemsFromEntity('creditoCaja', this.authService.token)
       .subscribe(res => {
         this.creditosCaja = (<CreditoCaja[]>res);
@@ -50,22 +53,24 @@ export class CreditoscajaComponent implements OnInit {
 
       // Inicializa el form construyendolo con los campos
     this.modalForm = this.formBuilder.group({
-      fecha: [new Date()],
+      fecha: [new Date(), Validators.required],
       idCierre: [''],
-      noDocumento: [''],
-      monto: [''],
-      descripcion: [''],
-      tipo: ['']
+      noDocumento: ['', Validators.required],
+      monto: ['', Validators.required],
+      descripcion: ['', Validators.required],
+      tipo: ['', Validators.required]
     });
-    console.log( this.authService.accesos )
 
     this.accesos = this.authService.accesos.find( a => a.opcion === 'Abonos');
-              
+
   }
 
+  get f() { return this.modalForm.controls; }
+
   openToAdd() {
+    this.submitted = false;
     this.modalMode = 1;
-    this.title='Agregar';
+    this.title = 'Agregar';
     this.modalForm = this.formBuilder.group({
       fecha: [this.currentDate()],
       idCierre: [''],
@@ -74,28 +79,29 @@ export class CreditoscajaComponent implements OnInit {
       descripcion: [''],
       tipo: ['']
     });
-    console.log(this.modalForm);
+
     this.entityModal.show();
   }
 
-  currentDate(){
+  currentDate() {
     // const currentDate = new Date();
     // return currentDate.toISOString().slice(0,-1);
-    let dp = new DatePipe('es-GT');
-    let p = "yyyy-MM-dd";
-    let dtr = dp.transform( new Date(), p );
+    const dp = new DatePipe('es-GT');
+    const p = 'yyyy-MM-dd';
+    const dtr = dp.transform( new Date(), p );
     return dtr;
   }
 
-  openToVisualy(id: number){
+  openToVisualy(id: number) {
+    this.submitted = false;
     this.modalMode = 0;
-    this.title='Consultar';
+    this.title = 'Consultar';
 
     this.dataService.getEntityDetail('creditoCaja', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<CreditoCaja>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           fecha: [this.detail.fecha],
@@ -113,15 +119,16 @@ export class CreditoscajaComponent implements OnInit {
 
     this.entityModal.show();
   }
-  openToModify(id: number){
+  openToModify(id: number) {
+    this.submitted = false;
     this.modalMode = 2;
-    this.title='Modificar';
-    
+    this.title = 'Modificar';
+
     this.dataService.getEntityDetail('creditoCaja', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<CreditoCaja>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           fecha: [this.detail.fecha],
@@ -137,7 +144,8 @@ export class CreditoscajaComponent implements OnInit {
         console.error(JSON.stringify(error2));
       });
   }
-  openToDelete(id: number, name: string, documento: number){
+  openToDelete(id: number, name: string, documento: number) {
+    this.submitted = false;
     this.selId = id;
     this.selName = name;
     this.selDocumento = documento;
@@ -163,7 +171,12 @@ export class CreditoscajaComponent implements OnInit {
   }
 
   saveChanges() {
-    console.log('Guardando cambios');
+    this.submitted = true;
+
+    if (this.modalForm.invalid) {
+      return;
+    }
+
     const dto: CreditoCajaDTO = {
       usuario: this.modalForm.value.usuario,
       nombre: this.modalForm.value.nombre,
@@ -171,8 +184,6 @@ export class CreditoscajaComponent implements OnInit {
       estado: this.modalForm.value.estado,
       password: this.modalForm.value.password
     };
-
-    console.log('Guardando cambios: ' + dto);
 
 
     if (this.modalMode === 1) {
@@ -201,7 +212,7 @@ export class CreditoscajaComponent implements OnInit {
      // Recarga valores y los muestra en pantalla, queda pendiente pagineo
      this.reload();
      this.entityModal.show();
- 
+
   }
 
   reload() {

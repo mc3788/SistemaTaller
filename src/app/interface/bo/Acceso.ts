@@ -1,3 +1,5 @@
+import {Perfil} from './Perfil';
+
 export class Acceso {
   id: number;
   idPerfil: number;
@@ -7,12 +9,14 @@ export class Acceso {
   baja:   string;
   cambio: string;
   consulta: string;
+  perfil: Perfil;
 
-  constructor( 
+  constructor(
                id: number,
                idPerfil: number,
                idOpcion: number,
                opcion: string,
+               perfil: Perfil,
                alta:   string,
                baja:   string,
                cambio: string,
@@ -26,6 +30,7 @@ export class Acceso {
     this.cambio = cambio;
     this.consulta = consulta;
     this.idOpcion = idOpcion;
+    this.perfil = perfil;
   }
 
 }

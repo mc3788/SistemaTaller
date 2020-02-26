@@ -1,8 +1,8 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ModalDirective} from 'ngx-bootstrap/modal';
 import {Acceso} from '../../interface/bo/Acceso';
 import { DataService } from '../../services/data.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AccesoDTO} from '../../interface/dto/AccesoDTO';
 import {Perfil} from '../../interface/bo/Perfil';
 import {AuthService} from '../../services/auth.service';
@@ -13,14 +13,13 @@ import {Opcion} from '../../interface/bo/Opcion';
   templateUrl: './acceso.component.html',
   styleUrls: ['./acceso.component.css']
 })
-export class AccesoComponent implements OnInit {
+export class AccesoComponent implements OnInit, OnDestroy {
 
   status: { isOpen: boolean } = { isOpen: false };
-  disabled: boolean = false;
-  isDropup: boolean = true;
-  autoClose: boolean = false;
 
   title = '';
+
+  submitted = false;
 
   // 0: View, 1: Add, 2: Modify
   modalMode = 0;
@@ -47,7 +46,7 @@ export class AccesoComponent implements OnInit {
 
   constructor(private dataService: DataService,
               public formBuilder: FormBuilder,
-              private authService: AuthService) { 
+              private authService: AuthService) {
 
     this.dataService.getAllItemsFromEntity('acceso', this.authService.token)
     .subscribe(res => {
@@ -73,8 +72,8 @@ export class AccesoComponent implements OnInit {
 
      // Inicializa el form construyendolo con los campos
      this.modalForm = this.formBuilder.group({
-      perfil: [''],
-      opcion: [''],
+      perfil: ['', Validators.required],
+      opcion: ['', Validators.required],
       alta: [''],
       baja: [''],
       cambio: [''],
@@ -87,7 +86,10 @@ export class AccesoComponent implements OnInit {
   ngOnInit() {
   }
 
+  get f() { return this.modalForm.controls; }
+
   openToAdd() {
+    this.submitted = false;
     this.modalMode = 1;
     this.title = 'Agregar';
     this.modalForm = this.formBuilder.group({
@@ -101,7 +103,8 @@ export class AccesoComponent implements OnInit {
     this.entityModal.show();
   }
 
-  openToModify(id: number){
+  openToModify(id: number) {
+    this.submitted = false;
     this.modalMode = 2;
     this.title = 'Modificar';
 
@@ -109,7 +112,7 @@ export class AccesoComponent implements OnInit {
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Acceso>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           perfil: [this.detail.idPerfil],
@@ -127,6 +130,7 @@ export class AccesoComponent implements OnInit {
   }
 
   openToVisualy( id: number ) {
+    this.submitted = false;
     this.modalMode = 0;
     this.title = 'Consultar';
 
@@ -134,7 +138,7 @@ export class AccesoComponent implements OnInit {
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Acceso>resp);
-        console.log(this.detail.opcion);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           perfil: [this.detail.idPerfil],
@@ -153,6 +157,7 @@ export class AccesoComponent implements OnInit {
   }
 
   openToDelete( id: number, name: string, namePerfil: string) {
+    this.submitted = false;
     this.selId = id;
     this.selName = name;
     this.selName2 = namePerfil;
@@ -175,7 +180,13 @@ export class AccesoComponent implements OnInit {
   }
 
   saveChanges() {
-    console.log('Guardando cambios');
+
+    this.submitted = true;
+
+    if (this.modalForm.invalid) {
+      return;
+    }
+
     const dto: AccesoDTO = {
       idPerfil: this.modalForm.value.perfil,
       idOpcion: this.modalForm.value.opcion,
@@ -184,8 +195,6 @@ export class AccesoComponent implements OnInit {
       cambio: this.modalForm.value.cambio,
       consulta: this.modalForm.value.consulta
     };
-
-    console.log('Guardando cambios: ' , dto);
 
 
     if (this.modalMode === 1) {

@@ -34,7 +34,7 @@ export class LoginComponent {
         await this.router.navigate(['/dashboard']);
       }, err => {
         this.error = true;
-        console.log( err );
+        console.error( err );
     });
 
   }

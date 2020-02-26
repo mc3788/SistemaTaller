@@ -24,7 +24,7 @@ export class DefaultLayoutComponent {
         this.accesos = this.authService.accesos;
         this.loadMenu();
       }).catch( () => {
-        console.log("Error");
+        console.error( 'Error getting access.' );
       });
     } else {
       this.accesos = this.authService.accesos;
@@ -44,7 +44,7 @@ export class DefaultLayoutComponent {
       }
 
     });
-    
+
   }
 
   toggleMinimize(e) {

@@ -47,8 +47,8 @@
       </div>
     </div>
   </div>
-  
-  <div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="entityModal" 
+
+  <div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="entityModal"
   aria-hidden="true">
       <div class="modal-dialog modal-primary modal-lg" role="document">
           <div class="modal-content">
@@ -63,26 +63,29 @@
 
                 <div class="form-group">
                   <label class="col-form-label" for="perfilSelect">Perfil</label>
-                  <div class="controls">
-                    <div class="input-prepend input-group">
-                       <select id="perfilSelect" class="form-control" formControlName="perfil" name="perfilSelect" [disableControl]="modalMode!=0">
+
+                       <select id="perfilSelect" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.perfilSelect.errors }"
+                               formControlName="perfil" name="perfilSelect" [disableControl]="modalMode!=0">
                         <option *ngFor="let p of perfiles" value="{{p.id}}">{{p.descripcion}}</option>
                       </select>
-                    </div>
+                  <div *ngIf="submitted && f.perfilSelect.errors" class="invalid-feedback">
+                    <div *ngIf="f.perfilSelect.errors.required">El perfil es requerido</div>
                   </div>
                 </div>
                 <div class="form-group">
                   <label class="col-form-label" for="opcionSelect">Opción</label>
-                  <div class="controls">
-                    <div class="input-prepend input-group">
-                      <select id="opcionSelect" class="form-control" formControlName="opcion" name="opcionSelect" [disableControl]="modalMode!=0">
+
+                      <select id="opcionSelect" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.optionSelect.errors }"
+                              formControlName="opcion" name="opcionSelect" [disableControl]="modalMode!=0">
                         <option *ngFor="let op of opciones" value="{{op.id}}">{{op.descripcion}}</option>
                       </select>
-                    </div>
+                  <div *ngIf="submitted && f.optionSelect.errors" class="invalid-feedback">
+                    <div *ngIf="f.optionSelect.errors.required">La opción es requerida</div>
                   </div>
+
                 </div>
                 <div class="form-group">
-                  <label class="col-form-label" for="altaInput">Alta</label>
+                  <label class="col-form-label" for="altaOpcionSelect">Alta</label>
                   <div class="controls">
                     <div class="input-prepend input-group">
                       <select id="altaOpcionSelect" class="form-control" formControlName="alta" name="altaOpcionSelect" [disableControl]="modalMode===0">
@@ -93,7 +96,7 @@
                   </div>
               </div>
               <div class="form-group">
-                <label class="col-form-label" for="bajaInput">Baja</label>
+                <label class="col-form-label" for="bajaOpcionSelect">Baja</label>
                 <div class="controls">
                   <div class="input-prepend input-group">
                     <select id="bajaOpcionSelect" class="form-control" formControlName="baja" name="bajaOpcionSelect" [disableControl]="modalMode===0">
@@ -104,7 +107,7 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-form-label" for="cambioInput">Cambio</label>
+                <label class="col-form-label" for="cambioOpcionSelect">Cambio</label>
                 <div class="controls">
                   <div class="input-prepend input-group">
                     <select id="cambioOpcionSelect" class="form-control" formControlName="cambio" name="cambioOpcionSelect" [disableControl]="modalMode===0">
@@ -115,7 +118,7 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-form-label" for="consultaInput">Consulta</label>
+                <label class="col-form-label" for="consultaOpcionSelect">Consulta</label>
                 <div class="controls">
                   <div class="input-prepend input-group">
                     <select id="consultaOpcionSelect" class="form-control" formControlName="consulta" name="consultaOpcionSelect" [disableControl]="modalMode===0">
@@ -134,7 +137,7 @@
           </div>
       </div>
   </div>
-  
+
   <!--Modal de Eliminacion-->
   <div bsModal #deleteModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
        aria-hidden="true">
@@ -158,4 +161,4 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
-  
+

@@ -56,7 +56,7 @@
     </div>
   </div>
 
-  <div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="entityModal" 
+  <div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="entityModal"
     aria-hidden="true">
         <div class="modal-dialog modal-primary modal-lg" role="document">
             <div class="modal-content">
@@ -72,43 +72,52 @@
 
                   <div class="form-group">
                     <label class="col-form-label" for="fechaInput">Fecha</label>
-                    <div class="controls">
-                      <div class="input-group">
-                        <input id="fechaInput" class="form-control" formControlName="fecha" size="16" type="date" [disableControl]="modalMode===0">
-                      </div>
+
+                    <input id="fechaInput" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.date.errors }"
+                           formControlName="fecha" size="16" type="date" [disableControl]="modalMode===0" required>
+                    <div *ngIf="submitted && f.date.errors" class="invalid-feedback">
+                      <div *ngIf="f.date.errors.required">La fecha es requerida</div>
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="col-form-label" for="noDocumentoInput">No. Documento</label>
-                    <div class="controls">
-                      <div class="input-prepend input-group">
-                        <input id="noDocumentoInput" class="form-control" formControlName="noDocumento" size="16" type="number" [disableControl]="modalMode===0 || items.idCierre!=0">
-                      </div>
+
+                    <input id="noDocumentoInput" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.noDocumento.errors }"
+                           formControlName="noDocumento" size="16" type="number" [disableControl]="modalMode===0" required>
+                    <div *ngIf="submitted && f.noDocumento.errors" class="invalid-feedback">
+                      <div *ngIf="f.noDocumento.errors.required">El número de documento es requerido</div>
                     </div>
+
                   </div>
                   <div class="form-group">
                     <label class="col-form-label" for="montoInput">Monto</label>
-                    <div class="controls">
-                      <div class="input-prepend input-group">
-                        <input id="montoInput" class="form-control" formControlName="monto" size="16" type="number" [disableControl]="modalMode===0">
-                      </div>
+
+                    <input id="montoInput" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.monto.errors }"
+                           formControlName="monto" size="16" type="number" [disableControl]="modalMode===0" required>
+                    <div *ngIf="submitted && f.monto.errors" class="invalid-feedback">
+                      <div *ngIf="f.monto.errors.required">El monto es requerido</div>
                     </div>
+
                   </div>
                   <div class="form-group">
                     <label class="col-form-label" for="descripcionInput">Descripción</label>
-                    <div class="controls">
-                      <div class="input-prepend input-group">
-                        <input id="descripcionInput" class="form-control" formControlName="descripcion" size="16" type="text" [disableControl]="modalMode===0">
-                      </div>
+
+                        <input id="descripcionInput" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.descripcion.errors }"
+                               formControlName="descripcion" size="16" type="text" [disableControl]="modalMode===0" required>
+                    <div *ngIf="submitted && f.descripcion.errors" class="invalid-feedback">
+                      <div *ngIf="f.descripcion.errors.required">La descripción es requerida</div>
                     </div>
+
                   </div>
                   <div class="form-group">
                     <label class="col-form-label" for="tipoInput">Tipo</label>
-                    <div class="controls">
-                      <div class="input-prepend input-group">
-                        <input id="tipoInput" class="form-control" formControlName="tipo" size="16" type="text" [disableControl]="modalMode===0">
-                      </div>
+
+                    <input id="tipoInput" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.tipo.errors }"
+                           formControlName="tipo" size="16" type="text" [disableControl]="modalMode===0" required>
+                    <div *ngIf="submitted && f.tipo.errors" class="invalid-feedback">
+                      <div *ngIf="f.tipo.errors.required">El monto es requerido</div>
                     </div>
+
                   </div>
                 </div>
                 <div class="modal-footer">

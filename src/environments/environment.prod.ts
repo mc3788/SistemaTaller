@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  backenUrlImg: 'http://localhost/api/'
+  backenUrlImg: 'https://api-taller.makeitart.gt/api/'
 };

@@ -1,10 +1,9 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {ModalDirective} from 'ngx-bootstrap/modal';
 import {CierreCaja} from '../../interface/bo/CierreCaja';
 import { DataService } from '../../services/data.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {CierreCajaDTO} from '../../interface/dto/CierreCajaDTO';
-import {Perfil} from '../../interface/bo/Perfil';
 import {AuthService} from '../../services/auth.service';
 import {Acceso} from '../../interface/bo/Acceso';
 import { DatePipe } from '@angular/common';
@@ -17,6 +16,7 @@ import { DatePipe } from '@angular/common';
 export class CierrecajaComponent implements OnInit {
 
   title = '';
+  submitted = false;
 
   // 0: View, 1: Add, 2: Modify
   modalMode = 0;
@@ -29,7 +29,6 @@ export class CierrecajaComponent implements OnInit {
 
   cierresCaja: CierreCaja[];
   detail: CierreCaja;
-  perfiles: Perfil[];
 
   public accesos: Acceso;
 
@@ -41,7 +40,7 @@ export class CierrecajaComponent implements OnInit {
 
   constructor(private dataService: DataService,
               public formBuilder: FormBuilder,
-              private authService: AuthService) { 
+              private authService: AuthService) {
     this.dataService.getAllItemsFromEntity('cierreCaja', this.authService.token)
     .subscribe(res => {
     this.cierresCaja = (<CierreCaja[]>res);
@@ -51,20 +50,21 @@ export class CierrecajaComponent implements OnInit {
     });
     // Inicializa el form construyendolo con los campos
     this.modalForm = this.formBuilder.group({
-      fechaCierre: [''],
-      observaciones: ['']
+      fechaCierre: ['', Validators.required],
+      observaciones: ['', Validators.required]
     });
 
-    console.log( this.authService.accesos )
-
     this.accesos = this.authService.accesos.find( a => a.opcion === 'Cierre de Caja');
-    
+
   }
 
   ngOnInit() {
   }
 
+  get f() { return this.modalForm.controls; }
+
   openToAdd() {
+    this.submitted = false;
     this.modalMode = 1;
     this.title = 'Cierre mensual';
     this.modalForm = this.formBuilder.group({
@@ -76,14 +76,18 @@ export class CierrecajaComponent implements OnInit {
 
 
   saveChanges() {
-    console.log('Guardando cambios');
+
+    this.submitted = true;
+
+    if (this.modalForm.invalid) {
+      return;
+    }
+
     const dto: CierreCajaDTO = {
-      mes: this.modalForm.value.fechaCierre.substring(5,7),
-      anio: this.modalForm.value.fechaCierre.substring(0,4),
+      mes: this.modalForm.value.fechaCierre.substring(5, 7),
+      anio: this.modalForm.value.fechaCierre.substring(0, 4),
       observaciones: this.modalForm.value.observaciones
     };
-
-    console.log('Guardando cambios: ' + dto);
 
 
     if (this.modalMode === 1) {
@@ -125,13 +129,12 @@ export class CierrecajaComponent implements OnInit {
       });
   }
 
-  currentDate(){
+  currentDate() {
     // const currentDate = new Date();
     // return currentDate.toISOString().slice(0,-1);
-    let dp = new DatePipe('es-GT');
-    let p = "yyyy-MM";
-    let dtr = dp.transform( new Date(), p );
-    return dtr;
+    const dp = new DatePipe('es-GT');
+    const p = 'yyyy-MM';
+    return dp.transform( new Date(), p );
   }
 
   dismiss() {

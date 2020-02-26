@@ -42,7 +42,7 @@
             </tr>
           </tbody>
         </table>
-        
+
         <!-- <ul class="pagination">
           <li class="page-item"><a class="page-link" href="#">Prev</a></li>
           <li class="page-item active"><a class="page-link" href="#">1</a></li>
@@ -53,9 +53,9 @@
         </ul> -->
       </div>
     </div>
-  </div> 
+  </div>
 
-  <div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" 
+  <div bsModal #entityModal="bs-modal" class="modal fade" tabindex="-1" role="dialog"
   aria-labelledby="entityModal" aria-hidden="true">
         <div class="modal-dialog modal-primary modal-lg" role="document">
             <div class="modal-content">
@@ -69,19 +69,21 @@
                 <div class="modal-body">
                     <div class="form-group">
                       <label class="col-form-label" for="nombreInput">Nombre y Apellidos</label>
-                      <div class="controls">
-                        <div class="input-prepend input-group">
-                          <input id="nombreInput" class="form-control" formControlName="nombre" size="16" type="text" [disableControl]="modalMode==0">
-                        </div>
+
+                      <input id="nombreInput" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.nombre.errors }" formControlName="nombre" size="16" type="text" [disableControl]="modalMode==0" required>
+                      <div *ngIf="submitted && f.nombre.errors" class="invalid-feedback">
+                        <div *ngIf="f.nombre.errors.required">El nombre es requerido</div>
                       </div>
+
                     </div>
                     <div class="form-group">
                       <label class="col-form-label" for="nitInput">Nit</label>
-                      <div class="controls">
-                        <div class="input-group">
-                          <input id="nitInput" class="form-control" formControlName="nit" size="16" type="text" [disableControl]="modalMode==0">
-                        </div>
+
+                      <input id="nitInput" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.nit.errors }" formControlName="nit" size="16" type="text" [disableControl]="modalMode==0" required>
+                      <div *ngIf="submitted && f.nit.errors" class="invalid-feedback">
+                        <div *ngIf="f.nit.errors.required">El N.I.T. es requerido</div>
                       </div>
+
                     </div>
                     <div class="form-group">
                       <label class="col-form-label" for="direccionInput">Dirección</label>
@@ -107,7 +109,7 @@
                           </div>
                         </div>
                       </div>
-                  
+
                 </div>
                 <div class="modal-footer">
                   <button class="btn btn-secondary btn-secondary" type="button" (click)="dismiss()">Cancelar</button>

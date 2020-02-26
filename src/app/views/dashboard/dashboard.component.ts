@@ -11,20 +11,20 @@ import { newArray } from '@angular/compiler/src/util';
   templateUrl: 'dashboard.component.html'
 })
 export class DashboardComponent {
-  
+
   private cierresCaja: CierreCaja[];
   public accesos: Acceso;
   public gasto: Array<number> = [];
   public abono: Array<number> = [];
 
   constructor(private dataService: DataService,
-    private authService: AuthService) { 
-    var fecha = new Date();
-    var anio = fecha.getFullYear();
-    this.dataService.getListItems('cierreCaja/gastosAbonos', this.authService.token,anio)
+    private authService: AuthService) {
+    const fecha = new Date();
+    const anio = fecha.getFullYear();
+    this.dataService.getListItems('cierreCaja/gastosAbonos', this.authService.token, anio)
     .subscribe(res => {
     this.cierresCaja = (<CierreCaja[]>res);
-      for (let item of this.cierresCaja) {
+      for ( const item of this.cierresCaja ) {
         this.gasto.push(item.montoCredito);
         this.abono.push(item.montoDebito);
       }
@@ -40,8 +40,8 @@ export class DashboardComponent {
     scaleShowVerticalLines: false,
     responsive: true
   };
-  
-  public barChartLabels: string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+  public barChartLabels: string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
   public barChartType = 'bar';
   public barChartLegend = true;
 

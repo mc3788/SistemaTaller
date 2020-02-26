@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import {ModalDirective} from 'ngx-bootstrap/modal';
 import {Usuario} from '../../interface/bo/Usuario';
 import { DataService } from '../../services/data.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {UsuarioDTO} from '../../interface/dto/UsuarioDTO';
 import {Perfil} from '../../interface/bo/Perfil';
 import {AuthService} from '../../services/auth.service';
@@ -17,6 +17,9 @@ import {Acceso} from '../../interface/bo/Acceso';
 export class UsuarioComponent implements OnInit {
 
   title = '';
+  searchText = '';
+
+  submitted = false;
 
   // 0: View, 1: Add, 2: Modify
   modalMode = 0;
@@ -59,14 +62,12 @@ export class UsuarioComponent implements OnInit {
 
     // Inicializa el form construyendolo con los campos
     this.modalForm = this.formBuilder.group({
-      usuario: [''],
-      perfil: [''],
-      nombre: [''],
-      password: [''],
+      usuario: ['', Validators.required],
+      perfil: ['', Validators.required],
+      nombre: ['', Validators.required],
+      password: ['', Validators.required],
       estado: [0]
     });
-
-    console.log( this.authService.accesos )
 
     this.accesos = this.authService.accesos.find( a => a.opcion === 'Usuarios');
 
@@ -75,7 +76,10 @@ export class UsuarioComponent implements OnInit {
   ngOnInit() {
   }
 
+  get f() { return this.modalForm.controls; }
+
   openToAdd() {
+    this.submitted = false;
     this.modalMode = 1;
     this.title = 'Agregar';
     this.modalForm = this.formBuilder.group({
@@ -88,6 +92,7 @@ export class UsuarioComponent implements OnInit {
     this.entityModal.show();
   }
   openToVisualy( id: number ) {
+    this.submitted = false;
     this.modalMode = 0;
     this.title = 'Consultar';
 
@@ -95,7 +100,7 @@ export class UsuarioComponent implements OnInit {
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Usuario>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           usuario: [this.detail.usuario],
@@ -113,6 +118,7 @@ export class UsuarioComponent implements OnInit {
   }
 
   openToModify( id: number) {
+    this.submitted = false;
     this.modalMode = 2;
     this.title = 'Modificar';
 
@@ -120,7 +126,7 @@ export class UsuarioComponent implements OnInit {
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Usuario>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           usuario: [this.detail.usuario],
@@ -136,6 +142,7 @@ export class UsuarioComponent implements OnInit {
   }
 
   openToDelete( id: number, name: string) {
+    this.submitted = false;
     this.selId = id;
     this.selName = name;
     this.title = 'Eliminar';
@@ -157,7 +164,13 @@ export class UsuarioComponent implements OnInit {
   }
 
   saveChanges() {
-    console.log('Guardando cambios');
+
+    this.submitted = true;
+
+    if (this.modalForm.invalid) {
+      return;
+    }
+
     const dto: UsuarioDTO = {
       usuario: this.modalForm.value.usuario,
       nombre: this.modalForm.value.nombre,
@@ -165,8 +178,6 @@ export class UsuarioComponent implements OnInit {
       estado: this.modalForm.value.estado,
       password: this.modalForm.value.password
     };
-
-    console.log('Guardando cambios: ' + dto);
 
 
     if (this.modalMode === 1) {

@@ -1,8 +1,8 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {ModalDirective} from 'ngx-bootstrap/modal';
 import {Perfil} from '../../interface/bo/Perfil';
 import { DataService } from '../../services/data.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {PerfilDTO} from '../../interface/dto/PerfilDTO';
 import {AuthService} from '../../services/auth.service';
 import {Acceso} from '../../interface/bo/Acceso';
@@ -15,13 +15,17 @@ import {Opcion} from '../../interface/bo/Opcion';
 })
 
 export class CategoriaComponent implements OnInit {
-  title='';
+  title = '';
+
+  submitted = false;
 
   // 0: View, 1: Add, 2: Modify
   modalMode = 0;
   existsError = false;
   existsErrorTitle = '';
- 
+
+  searchText = '';
+
 // objecto que controla validaciones y valores del form
   modalForm: FormGroup;
 
@@ -42,7 +46,7 @@ export class CategoriaComponent implements OnInit {
 
   constructor(private dataService: DataService,
               public formBuilder: FormBuilder,
-              private authService: AuthService ) { 
+              private authService: AuthService ) {
     this.dataService.getAllItemsFromEntity( 'perfil', this.authService.token )
         .subscribe( resp => {
           this.perfiles = (<Perfil[]>resp);
@@ -66,14 +70,17 @@ export class CategoriaComponent implements OnInit {
 
     // Inicializa el form construyendolo con los campos
     this.modalForm = this.formBuilder.group({
-      descripcion: [''],
+      descripcion: ['', Validators.required ],
       observaciones: ['']
     });
 
     this.accesos = this.authService.accesos.find( a => a.opcion === 'Categorias');
   }
 
+  get f() { return this.modalForm.controls; }
+
   openToAdd() {
+    this.submitted = false;
     this.modalMode = 1;
     this.title = 'Agregar';
     this.modalForm = this.formBuilder.group({
@@ -82,7 +89,8 @@ export class CategoriaComponent implements OnInit {
     });
     this.entityModal.show();
   }
-  openToVisualy(id: number){
+  openToVisualy(id: number) {
+    this.submitted = false;
     this.modalMode = 0;
     this.title = 'Consultar';
 
@@ -90,7 +98,6 @@ export class CategoriaComponent implements OnInit {
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Perfil>resp);
-        console.log(this.detail);
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           descripcion: [this.detail.descripcion],
@@ -104,14 +111,15 @@ export class CategoriaComponent implements OnInit {
     this.entityModal.show();
   }
 
-  openToAccess(id: number){
+  openToAccess(id: number) {
+    this.submitted = false;
     this.modalMode = 3;
     this.title = 'Accesos';
 
-    this.dataService.getListItems('acceso/permissions', this.authService.token,id)
+    this.dataService.getListItems('acceso/permissions', this.authService.token, id)
     .subscribe( resp => {
       this.accesosPerfil = (<Acceso[]>resp);
-      console.log(this.accesosPerfil);
+
     }, error => {
       console.error( JSON.stringify(error) );
     });
@@ -120,7 +128,8 @@ export class CategoriaComponent implements OnInit {
   }
 
 
-  openToModify(id: number){
+  openToModify(id: number) {
+    this.submitted = false;
     this.modalMode = 2;
     this.title = 'Modificar';
 
@@ -128,7 +137,7 @@ export class CategoriaComponent implements OnInit {
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Perfil>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           descripcion: [this.detail.descripcion],
@@ -140,10 +149,11 @@ export class CategoriaComponent implements OnInit {
         console.error(JSON.stringify(error2));
       });
   }
-  openToDelete(id: number,name: string){
+  openToDelete(id: number, name: string) {
+    this.submitted = false;
     this.selId = id;
     this.selName = name;
-    this.title='Eliminar';
+    this.title = 'Eliminar';
     this.deleteModal.show();
   }
 
@@ -162,14 +172,17 @@ export class CategoriaComponent implements OnInit {
   }
 
   saveChanges() {
-    console.log('Guardando cambios');
+
+    this.submitted = true;
+
+    if (this.modalForm.invalid) {
+      return;
+    }
+
     const dto: PerfilDTO = {
       descripcion: this.modalForm.value.descripcion,
       observaciones: this.modalForm.value.observaciones
     };
-
-    console.log('Guardando cambios: ' + dto);
-
 
     if (this.modalMode === 1) {
       // Servicio para guardar nueva entidad

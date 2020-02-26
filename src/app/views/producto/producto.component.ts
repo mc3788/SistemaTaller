@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ModalDirective} from 'ngx-bootstrap/modal';
 import { Producto} from '../../interface/bo/Producto';
 import { DataService } from '../../services/data.service';
-import { FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { ProductoDTO} from '../../interface/dto/ProductoDTO';
 import { Marca} from '../../interface/bo/Marca';
 import { Proveedor} from '../../interface/bo/Proveedor';
@@ -16,7 +16,10 @@ import {Acceso} from '../../interface/bo/Acceso';
 })
 export class ProductoComponent implements OnInit {
 
-  title='';
+  title = '';
+  searchText = '';
+
+  submitted = false;
 
   // 0: View, 1: Add, 2: Modify
   modalMode = 0;
@@ -42,14 +45,14 @@ export class ProductoComponent implements OnInit {
 
   constructor(private dataService: DataService,
               public formBuilder: FormBuilder,
-              private authService: AuthService) { 
+              private authService: AuthService) {
     this.dataService.getAllItemsFromEntity('producto', this.authService.token)
     .subscribe(res => {
       this.productos = (<Producto[]>res);
     }, error => {
       console.error(JSON.stringify(error));
     });
-          
+
     this.dataService.getAllItemsFromEntity( 'marca', this.authService.token )
     .subscribe( resp => {
       this.marcas = (<Marca[]>resp);
@@ -66,23 +69,24 @@ export class ProductoComponent implements OnInit {
 
     // Inicializa el form construyendolo con los campos
     this.modalForm = this.formBuilder.group({
-      proveedor: [''],
-      nombre: [''],
-      precioCosto: [''],
-      precioVenta: [''],
-      marca: [''],
+      proveedor: ['', Validators.required],
+      nombre: ['', Validators.required],
+      precioCosto: ['', Validators.required],
+      precioVenta: ['', Validators.required],
+      marca: ['', Validators.required],
       observaciones: ['']
     });
-
-    console.log( this.authService.accesos )
 
     this.accesos = this.authService.accesos.find( a => a.opcion === 'Productos');
 
   }
 
+  get f() { return this.modalForm.controls; }
+
   openToAdd() {
+    this.submitted = false;
     this.modalMode = 1;
-    this.title='Agregar';
+    this.title = 'Agregar';
     this.modalForm = this.formBuilder.group({
       proveedor: [''],
       nombre: [''],
@@ -93,15 +97,16 @@ export class ProductoComponent implements OnInit {
     });
     this.entityModal.show();
   }
-  openToVisualy(id: number ){
+  openToVisualy(id: number ) {
+    this.submitted = false;
     this.modalMode = 0;
-    this.title='Consultar';
+    this.title = 'Consultar';
 
     this.dataService.getEntityDetail('producto',  this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Producto>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           proveedor: [this.detail.idProveedor],
@@ -120,14 +125,15 @@ export class ProductoComponent implements OnInit {
   }
 
 
-  openToModify(id: number){
+  openToModify(id: number) {
+    this.submitted = false;
     this.modalMode = 2;
-    this.title='Modificar';
+    this.title = 'Modificar';
     this.dataService.getEntityDetail('producto',  this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Producto>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           proveedor: [this.detail.idProveedor],
@@ -143,7 +149,8 @@ export class ProductoComponent implements OnInit {
         console.error(JSON.stringify(error2));
       });
   }
-  openToDelete(id: number, name: string){
+  openToDelete(id: number, name: string) {
+    this.submitted = false;
     this.selId = id;
     this.selName = name;
     this.title = 'Eliminar';
@@ -161,7 +168,12 @@ export class ProductoComponent implements OnInit {
   }
 
   saveChanges() {
-    console.log('Guardando cambios');
+    this.submitted = true;
+
+    if (this.modalForm.invalid) {
+      return;
+    }
+
     const dto: ProductoDTO = {
       idProveedor: this.modalForm.value.proveedor,
       nombre: this.modalForm.value.nombre,
@@ -170,9 +182,6 @@ export class ProductoComponent implements OnInit {
       idMarca: this.modalForm.value.marca,
       observaciones: this.modalForm.value.observaciones
     };
-    console.log(this.detail);
-
-    console.log('Guardando cambios: ' + dto);
 
     if (this.modalMode === 1) {
       // Servicio para guardar nueva entidad

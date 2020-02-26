@@ -1,8 +1,8 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {ModalDirective} from 'ngx-bootstrap/modal';
 import {Bodega} from '../../interface/bo/Bodega';
 import { DataService } from '../../services/data.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BodegaDTO} from '../../interface/dto/BodegaDTO';
 import {AuthService} from '../../services/auth.service';
 import {Acceso} from '../../interface/bo/Acceso';
@@ -13,10 +13,13 @@ import {Acceso} from '../../interface/bo/Acceso';
   styleUrls: ['./bodega.component.css']
 })
 export class BodegaComponent implements OnInit {
-  title='';
+  title = '';
 
   // 0: View, 1: Add, 2: Modify
   modalMode = 0;
+  searchText = '';
+
+  submitted = false;
 
   existsError = false;
   existsErrorTitle = '';
@@ -38,7 +41,7 @@ export class BodegaComponent implements OnInit {
 
   constructor(private dataService: DataService,
               public formBuilder: FormBuilder,
-              private authService: AuthService ) { 
+              private authService: AuthService ) {
       this.dataService.getAllItemsFromEntity('bodega', this.authService.token)
       .subscribe(res => {
         this.bodegas = (<Bodega[]>res);
@@ -48,38 +51,40 @@ export class BodegaComponent implements OnInit {
 
     // Inicializa el form construyendolo con los campos
     this.modalForm = this.formBuilder.group({
-      descripcion: [''],
+      descripcion: ['', Validators.required],
       observaciones: [''],
       estado: [0]
     });
-
-    console.log( this.authService.accesos )
 
     this.accesos = this.authService.accesos.find( a => a.opcion === 'Bodegas');
 
   }
 
+  get f() { return this.modalForm.controls; }
+
   openToAdd() {
     this.modalMode = 1;
-    this.title='Agregar';
+    this.submitted = false;
+    this.title = 'Agregar';
     this.modalForm = this.formBuilder.group({
       descripcion: [''],
       observaciones: [''],
       estado: [0]
     });
-    
+
     this.entityModal.show();
   }
-  
-  openToVisualy(id: number){
+
+  openToVisualy(id: number) {
     this.modalMode = 0;
-    this.title='Consultar';
+    this.title = 'Consultar';
+    this.submitted = false;
 
     this.dataService.getEntityDetail('bodega', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Bodega>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           descripcion: [this.detail.descripcion],
@@ -96,14 +101,15 @@ export class BodegaComponent implements OnInit {
     this.entityModal.show();
   }
 
-  openToModify(id: number){
+  openToModify(id: number) {
     this.modalMode = 2;
-    this.title='Modificar';
+    this.title = 'Modificar';
+    this.submitted = false;
     this.dataService.getEntityDetail('bodega', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Bodega>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           descripcion: [this.detail.descripcion],
@@ -117,9 +123,10 @@ export class BodegaComponent implements OnInit {
       });
   }
 
-  openToDelete(id: number, name: string){
+  openToDelete(id: number, name: string) {
     this.selId = id;
     this.selName = name;
+    this.submitted = false;
     this.title = 'Eliminar';
     this.deleteModal.show();
   }
@@ -139,15 +146,17 @@ export class BodegaComponent implements OnInit {
   }
 
   saveChanges() {
-    console.log('Guardando cambios');
+    this.submitted = true;
+
+    if (this.modalForm.invalid) {
+      return;
+    }
+
     const dto: BodegaDTO = {
       descripcion: this.modalForm.value.descripcion,
-      observaciones: this.modalForm.value.observaciones,
+      observaciones: this.modalForm.value.descripcion,
       estado: this.modalForm.value.estado
     };
-
-    console.log('Guardando cambios: ' + dto);
-
 
     if (this.modalMode === 1) {
       // Servicio para guardar nueva entidad
@@ -177,7 +186,7 @@ export class BodegaComponent implements OnInit {
     this.entityModal.show();
   }
   reload() {
-    this.dataService.getAllItemsFromEntity( 'bodega', this.authService.token,)
+    this.dataService.getAllItemsFromEntity( 'bodega', this.authService.token )
       .subscribe(resp => {
         this.bodegas = (<Bodega[]> resp);
       }, error => {

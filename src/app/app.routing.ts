@@ -51,27 +51,20 @@ export const routes: Routes = [
       loadChildren: () => import('./views/producto/producto.module').then(m => m.ProductoModule) },
       { path: 'bodega',
         loadChildren: () => import('./views/bodega/bodega.module').then(m => m.BodegaModule) },
-      { path: 'inventario',
-        loadChildren: () => import('./views/inventario/inventario.module').then(m => m.InventarioModule) },
       { path: 'cliente',
         loadChildren: () => import('./views/cliente/cliente.module').then(m => m.ClienteModule) },
-      { path: 'perfil',
-        loadChildren: () => import('./views/perfil/perfil.module').then(m => m.PerfilModule) },
-      { path: 'transaccionesinventario',
-        loadChildren: () => import('./views/transaccionesinventario/transaccionesinventario.module')
-          .then(m => m.TransaccionesinventarioModule) },
       { path: 'debitoscaja',
         loadChildren: () => import('./views/debitoscaja/debitoscaja.module').then(m => m.DebitoscajaModule) },
       { path: 'creditoscaja',
         loadChildren: () => import('./views/creditoscaja/creditoscaja.module').then(m => m.CreditoscajaModule) },
       { path: 'cierrecaja',
         loadChildren: () => import('./views/cierrecaja/cierrecaja.module').then(m => m.CierrecajaModule) },
-      { path: 'acceso', 
+      { path: 'acceso',
         loadChildren: () => import('./views/acceso/acceso.module').then(m => m.AccesoModule) }
     ]
   }
 ];
-//imports: [ RouterModule.forRoot(routes, {onSameUrlNavigation: 'reload'}) ],
+
 @NgModule({
   imports: [ RouterModule.forRoot(routes) ],
   exports: [ RouterModule ]

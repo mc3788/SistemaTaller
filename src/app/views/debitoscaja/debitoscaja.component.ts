@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import {ModalDirective} from 'ngx-bootstrap/modal';
 import {DebitoCaja} from '../../interface/bo/DebitoCaja';
 import { DataService } from '../../services/data.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {DebitoCajaDTO} from '../../interface/dto/DebitoCajaDTO';
 import {Proveedor} from '../../interface/bo/Proveedor';
 import {AuthService} from '../../services/auth.service';
@@ -17,6 +17,9 @@ import { DatePipe } from '@angular/common';
 export class DebitoscajaComponent implements OnInit {
 
   title = '';
+  searchText = '';
+
+  submitted = false;
 
   // 0: View, 1: Add, 2: Modify
   modalMode = 0;
@@ -43,7 +46,7 @@ export class DebitoscajaComponent implements OnInit {
 
   constructor(private dataService: DataService,
               public formBuilder: FormBuilder,
-              private authService: AuthService) { 
+              private authService: AuthService) {
     this.dataService.getAllItemsFromEntity('debitoCaja', this.authService.token)
       .subscribe(res => {
         this.debitosCaja = (<DebitoCaja[]>res);
@@ -59,26 +62,25 @@ export class DebitoscajaComponent implements OnInit {
           console.error( JSON.stringify(error) );
         });
 
-        console.log(this.proveedores);
-
     // Inicializa el form construyendolo con los campos
     this.modalForm = this.formBuilder.group({
-      fecha: [this.currentDate()],
-      proveedor: [''],
+      fecha: [this.currentDate(), Validators.required],
+      proveedor: ['', Validators.required],
       idCierre: [''],
       noOrden: [''],
       noFactura: [''],
-      monto: [''],
-      descripcion: ['']
+      monto: ['', Validators.required],
+      descripcion: ['', Validators.required]
     });
-
-    console.log( this.authService.accesos )
 
     this.accesos = this.authService.accesos.find( a => a.opcion === 'Gastos');
 
   }
 
+  get f() { return this.modalForm.controls; }
+
   openToAdd() {
+    this.submitted = false;
     this.modalMode = 1;
     this.title = 'Agregar';
     this.modalForm = this.formBuilder.group({
@@ -93,15 +95,16 @@ export class DebitoscajaComponent implements OnInit {
     this.entityModal.show();
   }
 
-  openToVisualy(id: number){
+  openToVisualy(id: number) {
+    this.submitted = false;
     this.modalMode = 0;
-    this.title='Consultar';
+    this.title = 'Consultar';
 
     this.dataService.getEntityDetail('debitoCaja', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<DebitoCaja>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           fecha: [this.detail.fecha],
@@ -121,15 +124,16 @@ export class DebitoscajaComponent implements OnInit {
     this.entityModal.show();
   }
 
-  openToModify(id: number){
+  openToModify(id: number) {
+    this.submitted = false;
     this.modalMode = 2;
-    this.title='Modificar';
-    
+    this.title = 'Modificar';
+
     this.dataService.getEntityDetail('debitoCaja', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<DebitoCaja>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           fecha: [this.detail.fecha],
@@ -147,7 +151,8 @@ export class DebitoscajaComponent implements OnInit {
       });
   }
 
-  openToDelete(id: number, name: string, documento: number){
+  openToDelete(id: number, name: string, documento: number) {
+    this.submitted = false;
     this.selId = id;
     this.selName = name;
     this.selDocumento = documento;
@@ -166,7 +171,12 @@ export class DebitoscajaComponent implements OnInit {
   }
 
   saveChanges() {
-    console.log('Guardando cambios');
+    this.submitted = true;
+
+    if (this.modalForm.invalid) {
+      return;
+    }
+
     const dto: DebitoCajaDTO = {
       fecha: this.modalForm.value.fecha,
       idProveedor: this.modalForm.value.proveedor,
@@ -175,8 +185,6 @@ export class DebitoscajaComponent implements OnInit {
       monto: this.modalForm.value.monto,
       descripcion: this.modalForm.value.descripcion,
     };
-
-    console.log('Guardando cambios: ' + dto);
 
 
     if (this.modalMode === 1) {
@@ -205,12 +213,12 @@ export class DebitoscajaComponent implements OnInit {
      // Recarga valores y los muestra en pantalla, queda pendiente pagineo
      this.reload();
      this.entityModal.show();
- 
+
   }
 
 
   reload() {
-    this.dataService.getAllItemsFromEntity( 'debitoCaja', this.authService.token, )
+    this.dataService.getAllItemsFromEntity( 'debitoCaja', this.authService.token )
       .subscribe(resp => {
         this.debitosCaja = (<DebitoCaja[]> resp);
       }, error => {
@@ -221,11 +229,10 @@ export class DebitoscajaComponent implements OnInit {
   ngOnInit() {
   }
 
-  currentDate(){
-    let dp = new DatePipe('es-GT');
-    let p = "yyyy-MM-dd";
-    let dtr = dp.transform( new Date(), p );
-    return dtr;
+  currentDate() {
+    const dp = new DatePipe('es-GT');
+    const p = 'yyyy-MM-dd';
+    return dp.transform( new Date(), p );
   }
 
   dismiss() {

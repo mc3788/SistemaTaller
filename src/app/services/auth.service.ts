@@ -39,6 +39,8 @@ export class AuthService {
           .subscribe( data => {
             this.accesos = <Acceso[]>data;
             resolve();
+          }, error => {
+            reject();
           } );
       } catch (e) {
         reject();

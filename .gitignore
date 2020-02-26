@@ -4,6 +4,7 @@
 # Folders to ignore
 node_modules
 /coverage
+/dist
 
 # IDEs and editors
 /.idea

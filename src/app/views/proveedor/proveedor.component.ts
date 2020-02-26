@@ -1,8 +1,8 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {ModalDirective} from 'ngx-bootstrap/modal';
 import {Proveedor} from '../../interface/bo/Proveedor';
 import { DataService } from '../../services/data.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProveedorDTO} from '../../interface/dto/ProveedorDTO';
 import {AuthService} from '../../services/auth.service';
 import {Acceso} from '../../interface/bo/Acceso';
@@ -15,7 +15,9 @@ import {Acceso} from '../../interface/bo/Acceso';
 })
 export class ProveedorComponent implements OnInit {
 
-  title='';
+  title = '';
+  searchText = '';
+  submitted = false;
 
   // 0: View, 1: Add, 2: Modify
   modalMode = 0;
@@ -50,19 +52,21 @@ export class ProveedorComponent implements OnInit {
     });
      // Inicializa el form construyendolo con los campos
      this.modalForm = this.formBuilder.group({
-      nit: [''],
-      nombre: [''],
+      nit: ['', Validators.required],
+      nombre: ['', Validators.required],
       telefono: [''],
       direccion: [''],
       observaciones: ['']
     });
-    console.log( this.authService.accesos )
 
     this.accesos = this.authService.accesos.find( a => a.opcion === 'Proveedores');
 
   }
 
+  get f() { return this.modalForm.controls; }
+
   openToAdd() {
+    this.submitted = false;
     this.modalMode = 1;
     this.title = 'Agregar';
     this.modalForm = this.formBuilder.group({
@@ -74,15 +78,16 @@ export class ProveedorComponent implements OnInit {
     });
     this.entityModal.show();
   }
-  openToVisualy(id: number){
-    this.title='Consultar';
+  openToVisualy(id: number) {
+    this.submitted = false;
+    this.title = 'Consultar';
     this.modalMode = 0;
 
     this.dataService.getEntityDetail('proveedor', this.authService.token, id)
     .subscribe(resp => {
       // se convierten los datos recuperadps al objeto
       this.detail = (<Proveedor>resp);
-      console.log(this.detail);
+
       // se ingresan los valores en el form y validaciones
       this.modalForm = this.formBuilder.group({
         nit: [this.detail.nit],
@@ -100,14 +105,15 @@ export class ProveedorComponent implements OnInit {
     this.entityModal.show();
   }
 
-  openToModify(id: number){
+  openToModify(id: number) {
+    this.submitted = false;
     this.modalMode = 2;
-    this.title='Modificar';
+    this.title = 'Modificar';
     this.dataService.getEntityDetail('proveedor', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Proveedor>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           nit: [this.detail.nit],
@@ -122,7 +128,8 @@ export class ProveedorComponent implements OnInit {
         console.error(JSON.stringify(error2));
       });
   }
-  openToDelete(id: number, name: string){
+  openToDelete(id: number, name: string) {
+    this.submitted = false;
     this.selId = id;
     this.selName = name;
     this.title = 'Eliminar';
@@ -144,7 +151,12 @@ export class ProveedorComponent implements OnInit {
   }
 
   saveChanges() {
-    console.log('Guardando cambios');
+    this.submitted = true;
+
+    if (this.modalForm.invalid) {
+      return;
+    }
+
     const dto: ProveedorDTO = {
       nit: this.modalForm.value.nit,
       nombre: this.modalForm.value.nombre,
@@ -154,7 +166,7 @@ export class ProveedorComponent implements OnInit {
     };
     if (this.modalMode === 1) {
       // Servicio para guardar nueva entidad
-      this.dataService.insertNewEntity('proveedor',this.authService.token, dto)
+      this.dataService.insertNewEntity('proveedor', this.authService.token, dto)
         .subscribe(resp => {
           this.reload();
           this.entityModal.hide();

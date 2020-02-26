@@ -1,4 +1,4 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {ModalDirective} from 'ngx-bootstrap/modal';
 import {Marca} from '../../interface/bo/Marca';
 import { DataService } from '../../services/data.service';
@@ -14,9 +14,10 @@ import {Acceso} from '../../interface/bo/Acceso';
 })
 export class MarcaComponent implements OnInit {
 
-  title='';
+  title = '';
+  searchText = '';
 
-  invalidName = false;
+  submitted = false;
 
 
   // 0: View, 1: Add, 2: Modify
@@ -40,7 +41,7 @@ export class MarcaComponent implements OnInit {
   @ViewChild('deleteModal') public deleteModal: ModalDirective;
 
   constructor(private dataService: DataService,
-              public formBuilder: FormBuilder, 
+              public formBuilder: FormBuilder,
               private authService: AuthService) {
     this.dataService.getAllItemsFromEntity('marca', this.authService.token)
     .subscribe(res => {
@@ -48,36 +49,35 @@ export class MarcaComponent implements OnInit {
     }, error => {
       console.error(JSON.stringify(error));
     });
-    
     // Inicializa el form construyendolo con los campos
     this.modalForm = this.formBuilder.group({
-      nombre: ['']
+      nombre: ['', Validators.required ]
       });
-
-
-    console.log( this.authService.accesos )
 
     this.accesos = this.authService.accesos.find( a => a.opcion === 'Marca');
   }
 
+  get f() { return this.modalForm.controls; }
+
   openToAdd() {
+    this.submitted = false;
     this.modalMode = 1;
-    this.title='Agregar';
+    this.title = 'Agregar';
     this.modalForm = this.formBuilder.group({
-      nombre: ['', [Validators.required]]
+      nombre: ['']
     });
-    
     this.entityModal.show();
   }
-  openToVisualy(id: number){
+  openToVisualy(id: number) {
     this.modalMode = 0;
-    this.title='Consultar';
+    this.submitted = false;
+    this.title = 'Consultar';
 
     this.dataService.getEntityDetail('marca', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Marca>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           nombre: [this.detail.nombre]
@@ -90,14 +90,15 @@ export class MarcaComponent implements OnInit {
     this.entityModal.show();
   }
 
-  openToModify(id: number){
+  openToModify(id: number) {
     this.modalMode = 2;
-    this.title='Modificar';
+    this.submitted = false;
+    this.title = 'Modificar';
     this.dataService.getEntityDetail('marca', this.authService.token, id)
       .subscribe(resp => {
         // se convierten los datos recuperadps al objeto
         this.detail = (<Marca>resp);
-        console.log(this.detail);
+
         // se ingresan los valores en el form y validaciones
         this.modalForm = this.formBuilder.group({
           nombre: [this.detail.nombre]
@@ -108,7 +109,8 @@ export class MarcaComponent implements OnInit {
         console.error(JSON.stringify(error2));
       });
   }
-  openToDelete(id: number, name: string){
+  openToDelete(id: number, name: string) {
+    this.submitted = false;
     this.selId = id;
     this.selName = name;
     this.title = 'Eliminar';
@@ -126,23 +128,17 @@ export class MarcaComponent implements OnInit {
   }
 
   saveChanges() {
-    
-    this.invalidName = false;
 
-      let name = this.modalForm.value.nombre;
+    this.submitted = true;
 
-      if( name === null || name === "" ){
-        this.invalidName = true;
-        return;
-      }
-    
-    console.log('Guardando cambios');
+
+    if (this.modalForm.invalid) {
+      return;
+    }
+
     const dto: MarcaDTO = {
-      nombre: name
+      nombre: this.modalForm.value.nombre
     };
-
-    console.log('Guardando cambios: ' + dto);
-
 
     if (this.modalMode === 1) {
       // Servicio para guardar nueva entidad

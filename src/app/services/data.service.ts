@@ -20,7 +20,7 @@ export class DataService {
       'Content-Type': 'application/json',
       'X-Auth-Token': token
     });
-    console.log(object);
+
     return this.http.put(backenUrl + entity + '/' + id, JSON.stringify(object), {headers: headers});
   }
 
