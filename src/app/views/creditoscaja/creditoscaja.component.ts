@@ -178,11 +178,11 @@ export class CreditoscajaComponent implements OnInit {
     }
 
     const dto: CreditoCajaDTO = {
-      usuario: this.modalForm.value.usuario,
-      nombre: this.modalForm.value.nombre,
-      idPerfil: this.modalForm.value.perfil,
-      estado: this.modalForm.value.estado,
-      password: this.modalForm.value.password
+      fecha: this.modalForm.value.fecha,
+      noDocumento: this.modalForm.value.noDocumento,
+      monto: this.modalForm.value.monto,
+      descripcion: this.modalForm.value.descripcion,
+      tipo: this.modalForm.value.tipo
     };
 
 
