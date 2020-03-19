@@ -63,6 +63,16 @@ export class DataService {
     return this.http.get(backenUrl + entity+ '/' + id, {headers: headers});
   };
 
+  // Listado por Fecha
+  public getListDate(entity: string, token: string, fecIni: String, fecFin: String){
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'X-Auth-Token': token
+    });
+    console.log(backenUrl + entity+ '/' + fecIni+'/' + fecFin);
+    return this.http.get(backenUrl + entity+ '/' + fecIni+'/' + fecFin, {headers: headers});
+  };
+
   public getEntityDetail(entity: string, token: string, id: number) {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',

@@ -26,6 +26,8 @@ export class DebitoscajaComponent implements OnInit {
 
   existsError = false;
   existsErrorTitle = '';
+  fechaIni='';
+  fechaFin='';
 
   // objecto que controla validaciones y valores del form
   modalForm: FormGroup;
@@ -47,13 +49,13 @@ export class DebitoscajaComponent implements OnInit {
   constructor(private dataService: DataService,
               public formBuilder: FormBuilder,
               private authService: AuthService) {
-    this.dataService.getAllItemsFromEntity('debitoCaja', this.authService.token)
-      .subscribe(res => {
-        this.debitosCaja = (<DebitoCaja[]>res);
-      }, error => {
-        console.error(error);
-        this.dataService.validError( error );
-      });
+
+    this.dataService.getListDate('debitoCaja/filtrofecha', this.authService.token, this.firstDay(), this.lastDay())
+    .subscribe( resp => {
+      this.debitosCaja = (<DebitoCaja[]>resp);
+    }, error => {
+      console.error( JSON.stringify(error) );
+    });
 
     this.dataService.getAllItemsFromEntity( 'proveedor', this.authService.token )
         .subscribe( resp => {
@@ -72,6 +74,8 @@ export class DebitoscajaComponent implements OnInit {
       monto: ['', Validators.required],
       descripcion: ['', Validators.required]
     });
+    this.fechaFin=this.lastDay();
+    this.fechaIni=this.firstDay();
 
     this.accesos = this.authService.accesos.find( a => a.opcion === 'Gastos');
 
@@ -218,12 +222,12 @@ export class DebitoscajaComponent implements OnInit {
 
 
   reload() {
-    this.dataService.getAllItemsFromEntity( 'debitoCaja', this.authService.token )
-      .subscribe(resp => {
-        this.debitosCaja = (<DebitoCaja[]> resp);
-      }, error => {
-        console.error( JSON.stringify(error) );
-      });
+    this.dataService.getListDate('debitoCaja/filtrofecha', this.authService.token, this.fechaIni, this.fechaFin)
+    .subscribe( resp => {
+      this.debitosCaja = (<DebitoCaja[]>resp);
+    }, error => {
+      console.error( JSON.stringify(error) );
+    });
   }
 
   ngOnInit() {
@@ -235,8 +239,31 @@ export class DebitoscajaComponent implements OnInit {
     return dp.transform( new Date(), p );
   }
 
+  firstDay(){
+    const dp = new DatePipe('es-GT');
+    var pd= new Date();
+    const p = 'yyyy-MM-dd';
+    return dp.transform( new Date(pd.getFullYear(), pd.getMonth(), 1), p );
+  }
+
+  lastDay(){
+    const dp = new DatePipe('es-GT');
+    var pd= new Date();
+    const p = 'yyyy-MM-dd';
+    return dp.transform( new Date(pd.getFullYear(), pd.getMonth() + 1, 0), p );
+  }
+
   dismiss() {
       this.entityModal.hide();
+  }
+
+  filtroFechas() {
+    this.dataService.getListDate('debitoCaja/filtrofecha', this.authService.token, this.fechaIni, this.fechaFin)
+    .subscribe( resp => {
+      this.debitosCaja = (<DebitoCaja[]>resp);
+    }, error => {
+      console.error( JSON.stringify(error) );
+    });
   }
 
 }

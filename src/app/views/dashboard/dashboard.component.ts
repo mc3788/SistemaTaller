@@ -1,63 +1,67 @@
 import { Component } from '@angular/core';
-import {CierreCaja} from '../../interface/bo/CierreCaja';
+import { DebitoCaja } from '../../interface/bo/DebitoCaja';
+import { CreditoCaja } from '../../interface/bo/CreditoCaja';
 import { DataService } from '../../services/data.service';
-import {AuthService} from '../../services/auth.service';
-import {Acceso} from '../../interface/bo/Acceso';
-import { getFullYear } from 'ngx-bootstrap';
-import { animation } from '@angular/animations';
-import { newArray } from '@angular/compiler/src/util';
+import { AuthService} from '../../services/auth.service';
+import { Acceso} from '../../interface/bo/Acceso';
+import { DatePipe } from '@angular/common';
 
 @Component({
   templateUrl: 'dashboard.component.html'
 })
 export class DashboardComponent {
 
-  private cierresCaja: CierreCaja[];
   public accesos: Acceso;
-  public gasto: Array<number> = [];
-  public abono: Array<number> = [];
+  debitosCaja: DebitoCaja[];
+  creditosCaja: CreditoCaja[];
+  sumDebitos = 0;
+  sumCreditos = 0;
 
   constructor(private dataService: DataService,
     private authService: AuthService) {
-    const fecha = new Date();
-    const anio = fecha.getFullYear();
-    this.dataService.getListItems('cierreCaja/gastosAbonos', this.authService.token, anio)
-    .subscribe(res => {
-    this.cierresCaja = (<CierreCaja[]>res);
-      for ( const item of this.cierresCaja ) {
-        this.gasto.push(item.montoCredito);
-        this.abono.push(item.montoDebito);
-      }
-    }, error => {
-    console.error(error);
-    this.dataService.validError( error );
-  });
-  this.accesos = this.authService.accesos.find( a => a.opcion === 'Dashboard');
-}
 
-  // barChart
-  public barChartOptions: any = {
-    scaleShowVerticalLines: false,
-    responsive: true
-  };
-
-  public barChartLabels: string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-  public barChartType = 'bar';
-  public barChartLegend = true;
+      this.dataService.getListDate('debitoCaja/filtrofecha', this.authService.token, this.currentDate(), this.currentDate())
+      .subscribe( resp => {
+        this.debitosCaja = (<DebitoCaja[]>resp);
+        this.sumDebitos = this.debitosCaja.reduce((a, b) => a + (b['monto'] || 0), 0);
+      }, error => {
+        console.error( JSON.stringify(error) );
+      });
 
 
-  public barChartData: any[] = [
-    {data: this.gasto, label: 'Gastos'},
-    {data: this.abono, label: 'Abonos'}
-  ];
-
-  // events
-  public chartClicked(e: any): void {
-    // console.log(e);
+      this.dataService.getListDate('creditoCaja/filtrofecha', this.authService.token, this.currentDate(), this.currentDate())
+      .subscribe( resp => {
+        this.creditosCaja = (<CreditoCaja[]>resp);
+        this.sumCreditos = this.creditosCaja.reduce((a, b) => a + (b['monto'] || 0), 0);
+      }, error => {
+        console.error( JSON.stringify(error) );
+      });
+    
+    this.accesos = this.authService.accesos.find( a => a.opcion === 'Dashboard');
   }
 
-  public chartHovered(e: any): void {
-    // console.log(e);
+  firstDay(){
+    const dp = new DatePipe('es-GT');
+    var pd= new Date();
+    const p = 'yyyy-MM-dd';
+    return dp.transform( new Date(pd.getFullYear(), pd.getMonth(), 1), p );
+  }
+
+  lastDay(){
+    const dp = new DatePipe('es-GT');
+    var pd= new Date();
+    const p = 'yyyy-MM-dd';
+    return dp.transform( new Date(pd.getFullYear(), pd.getMonth() + 1, 0), p );
+  }
+
+  currentDate() {
+    // const currentDate = new Date();
+    // return currentDate.toISOString().slice(0,-1);
+    const dp = new DatePipe('es-GT');
+    const p = 'yyyy-MM-dd';
+    const dtr = dp.transform( new Date(), p );
+    return dtr;
   }
 
 }
+

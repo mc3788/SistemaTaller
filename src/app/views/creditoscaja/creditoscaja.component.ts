@@ -25,6 +25,8 @@ export class CreditoscajaComponent implements OnInit {
 
   existsError = false;
   existsErrorTitle = '';
+  fechaIni='';
+  fechaFin='';
 
   // objecto que controla validaciones y valores del form
   modalForm: FormGroup;
@@ -44,13 +46,15 @@ export class CreditoscajaComponent implements OnInit {
   constructor(private dataService: DataService,
               public formBuilder: FormBuilder,
               private authService: AuthService) {
-    this.dataService.getAllItemsFromEntity('creditoCaja', this.authService.token)
-      .subscribe(res => {
-        this.creditosCaja = (<CreditoCaja[]>res);
-      }, error => {
-        console.error(JSON.stringify(error));
-      });
 
+    this.dataService.getListDate('creditoCaja/filtrofecha', this.authService.token, this.firstDay(), this.lastDay())
+    .subscribe( res => {
+      this.creditosCaja = (<CreditoCaja[]>res);
+      console.log(this.creditosCaja);
+    }, error => {
+      console.error( JSON.stringify(error) );
+    });
+  
       // Inicializa el form construyendolo con los campos
     this.modalForm = this.formBuilder.group({
       fecha: [new Date(), Validators.required],
@@ -60,12 +64,13 @@ export class CreditoscajaComponent implements OnInit {
       descripcion: ['', Validators.required],
       tipo: ['', Validators.required]
     });
+    this.fechaFin=this.lastDay();
+    this.fechaIni=this.firstDay();
 
     this.accesos = this.authService.accesos.find( a => a.opcion === 'Abonos');
 
   }
-
-  get f() { return this.modalForm.controls; }
+get f() { return this.modalForm.controls; }
 
   openToAdd() {
     this.submitted = false;
@@ -216,12 +221,35 @@ export class CreditoscajaComponent implements OnInit {
   }
 
   reload() {
-    this.dataService.getAllItemsFromEntity( 'creditoCaja', this.authService.token)
-      .subscribe(resp => {
-        this.creditosCaja = (<CreditoCaja[]> resp);
-      }, error => {
-        console.error( JSON.stringify(error) );
-      });
+    this.dataService.getListDate('creditoCaja/filtrofecha', this.authService.token, this.fechaIni, this.fechaFin)
+    .subscribe( res => {
+      this.creditosCaja = (<CreditoCaja[]>res);
+    }, error => {
+      console.error( JSON.stringify(error) );
+    });
+  }
+
+  filtroFechas() {
+    this.dataService.getListDate('creditoCaja/filtrofecha', this.authService.token, this.fechaIni, this.fechaFin)
+    .subscribe( resp => {
+      this.creditosCaja = (<CreditoCaja[]>resp);
+      console.log(this.creditosCaja);
+    }, error => {
+      console.error( JSON.stringify(error) );
+    });
+  }
+  firstDay(){
+    const dp = new DatePipe('es-GT');
+    var pd= new Date();
+    const p = 'yyyy-MM-dd';
+    return dp.transform( new Date(pd.getFullYear(), pd.getMonth(), 1), p );
+  }
+
+  lastDay(){
+    const dp = new DatePipe('es-GT');
+    var pd= new Date();
+    const p = 'yyyy-MM-dd';
+    return dp.transform( new Date(pd.getFullYear(), pd.getMonth() + 1, 0), p );
   }
 
 }

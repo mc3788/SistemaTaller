@@ -1,0 +1,7 @@
+.input-group>.input-group-prepend1 {
+    flex: 0 0 0%;
+    size: 2px;
+}
+.input-group-text{
+    padding: 0.59rem 0.75rem;
+}
